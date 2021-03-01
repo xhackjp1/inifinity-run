@@ -7,12 +7,16 @@
     <title>Document</title>
   </head>
   <body>
-    <canvas id="canvas" width="1000" height="600" style="background-color: mediumturquoise"></canvas>
+    <canvas
+      id="canvas"
+      width="1000"
+      height="600"
+      style="background-color: mediumturquoise"
+    ></canvas>
     <script>
       /* Get the canvas object */
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
-      const gravity = 0.4; 
       const gameObjects = [];
       const colliderGroup = [];
 
@@ -21,14 +25,15 @@
         constructor(x = 100, y = 350, width = 90, height = 90) {
           this.x = x;
           this.y = y;
+          this.defaultY = y;
           this.state = "normal";
           this.width = width;
           this.height = height;
-          this.vy = 0 // 加速度
+          this.vy = 0; // 加速度
           this.image = new Image();
           this.image.src = "./assets/images/chara1.png";
 
-          gameObjects.push(this)
+          gameObjects.push(this);
         }
 
         jump() {
@@ -36,7 +41,7 @@
             // ジャンプ中にジャンプはできない
             return;
           }
-          this.vy = -16
+          this.vy = -16; // 初速度
           this.state = "jump";
         }
 
@@ -44,28 +49,28 @@
           // distant
           let distX = Math.abs(this.x - stone.x);
           let distY = Math.abs(this.y - stone.y);
-          if(distX < 50 && distY < 80) {
-            console.log("ぶつかった！")
+          if (distX < 50 && distY < 80) {
+            console.log("ぶつかった！");
             // 衝突したオブジェクトが、障害物かニンジンか判定する
           }
         }
 
         update() {
-          if(this.state === "jump"){
+          if (this.state === "jump") {
             this.y = this.y + this.vy;
-            this.vy = this.vy + 0.9;
-            if(this.y > 350){
+            this.vy = this.vy + 1.0;
+            if (this.y > this.defaultY) {
               // 着地したらjumpステート終了
-              this.y = 350
-              this.state = "normal"
+              this.y = this.defaultY;
+              this.state = "normal";
             }
           }
           ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-          
+
           // 当たっているかの判定
-          colliderGroup.forEach(obstacle => {
-            this.collidion(obstacle)
-          })
+          colliderGroup.forEach((obstacle) => {
+            this.collidion(obstacle);
+          });
         }
       }
 
@@ -78,14 +83,14 @@
           this.height = height;
           this.image = new Image();
           this.image.src = "./assets/images/stone.png";
-          gameObjects.push(this)
-          colliderGroup.push(this)
+          gameObjects.push(this);
+          colliderGroup.push(this);
         }
 
         update() {
           this.x -= this.speed;
           if (this.x < 0) {
-            this.x = 1000;
+            this.x = 1000 + 500 * Math.random();
           }
           ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
@@ -106,18 +111,18 @@
       }
 
       // 初期化
-      function gameStart(){
-        init()
+      function gameStart() {
+        init();
       }
 
-      gameStart()
+      gameStart();
 
       /* メインループ */
       setInterval(() => {
         ctx.fillRect(0, 0, 1000, 600);
-        gameObjects.forEach(obj => {
-          obj.update()
-        })
+        gameObjects.forEach((obj) => {
+          obj.update();
+        });
       }, 33); // 30fps frame per seconds
     </script>
   </body>
