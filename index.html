@@ -13,6 +13,7 @@
       /* Get the canvas object */
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
+      const gravity = 0.4; 
       const gameObjects = [];
       const colliderGroup = [];
 
@@ -24,8 +25,7 @@
           this.state = "normal";
           this.width = width;
           this.height = height;
-          this.jumpFrame = 0
-          this.jumpFrameMax = 30
+          this.vy = 0 // 加速度
           this.image = new Image();
           this.image.src = "./assets/images/chara1.png";
 
@@ -34,8 +34,10 @@
 
         jump() {
           if (this.state === "jump") {
+            // ジャンプ中にジャンプはできない
             return;
           }
+          this.vy = -16
           this.state = "jump";
         }
 
@@ -54,29 +56,19 @@
 
         update() {
           if(this.state === "jump"){
-            this.jumpFrame += 1
-            if(this.jumpFrame > 0 && this.jumpFrame < 7) {
-              this.y -= 14;
-            }
-            if(this.jumpFrame >= 7 && this.jumpFrame < 15) {
-              this.y -= 7;
-            }
-            if(this.jumpFrame >= 15 && this.jumpFrame < 22) {
-              this.y += 7;
-            }
-            if(this.jumpFrame >= 22 && this.jumpFrame < 29) {
-              this.y += 14;
-            }
-            if(this.jumpFrame === this.jumpFrameMax){
+            this.y = this.y + this.vy;
+            this.vy = this.vy + 0.9;
+            if(this.y > 350){
+              // 着地したらjumpステート終了
               this.y = 350
-              this.jumpFrame = 0
               this.state = "normal"
             }
           }
           ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-
-          colliderGroup.forEach(_ => {
-            this.collidion(_)
+          
+          // 当たっているかの判定
+          colliderGroup.forEach(obstacle => {
+            this.collidion(obstacle)
           })
         }
       }
@@ -134,8 +126,8 @@
       /* メインループ */
       const main = setInterval(() => {
         ctx.fillRect(0, 0, 1000, 600);
-        gameObjects.forEach(_ => {
-          _.update()
+        gameObjects.forEach(obj => {
+          obj.update()
         })
       }, 33); // 30fps frame per seconds
     </script>
