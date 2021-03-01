@@ -8,6 +8,7 @@
   </head>
   <body>
     <canvas id="canvas" width="1000" height="600" style="background-color: mediumturquoise"></canvas>
+    <button onclick="gameStart()">ゲームスタート</button>
     <script>
       /* Get the canvas object */
       const canvas = document.getElementById("canvas");
@@ -45,6 +46,9 @@
           if(distX < 50 && distY < 80) {
             console.log("ぶつかった！")
             // 衝突したオブジェクトが、障害物かニンジンか判定する
+
+            // ゲームを終了する
+            gameOver()
           }
         }
 
@@ -118,8 +122,17 @@
         init()
       }
 
+      // ゲーム終了
+      function gameOver() {
+        ctx.font = 'bold 72pt sans-serif';
+        ctx.fillStyle = 'red';
+        ctx.fillText('GAME OVER', 200, 300); 
+
+        clearInterval(main)
+      }
+
       /* メインループ */
-      setInterval(() => {
+      const main = setInterval(() => {
         ctx.fillRect(0, 0, 1000, 600);
         gameObjects.forEach(_ => {
           _.update()
