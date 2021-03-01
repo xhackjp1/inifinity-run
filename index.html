@@ -15,7 +15,7 @@
     ></canvas>
     <script>
       /* Game configs */
-      const DEBUG_MODE = true;
+      const DEBUG_MODE = false;
 
       /* Get the canvas object */
       const canvas = document.getElementById("canvas");
@@ -23,19 +23,23 @@
       const gameObjects = [];
 
       /* Images */
-      // const Chara1 = new Image();
-      // Chara1.src = "./chara1.png";
-      // const Stone1 = new Image();
-      // Stone1.src = "./stone.png";
-
       class MainCharacter {
         constructor(x = 10, y = 350, width = 90, height = 90) {
           this.x = x;
           this.y = y;
+          this.state = "normal";
           this.width = width;
           this.height = height;
           this.image = new Image();
           this.image.src = "./assets/images/chara1.png";
+        }
+
+        jump() {
+          if (this.state === "jump") {
+            return;
+          }
+          this.state = "jump";
+          this.y -= 120;
         }
 
         update() {
@@ -45,6 +49,12 @@
             ctx.rect(this.x, this.y, this.width, this.height);
             ctx.stroke();
           }
+          if (this.y < 350) {
+            this.y += 5;
+          } else {
+            this.state = "normal";
+            this.y = 350;
+          }
           ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
       }
@@ -53,7 +63,7 @@
         constructor(x = 900, y = 380, width = 60, height = 60) {
           this.x = x;
           this.y = y;
-          this.speed = 20;
+          this.speed = 10;
           this.width = width;
           this.height = height;
           this.image = new Image();
@@ -68,50 +78,30 @@
             ctx.rect(this.x, this.y, this.width, this.height);
             ctx.stroke();
           }
+          if (this.x < 0) {
+            this.x = 1000;
+          }
           ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
       }
 
       const chara = new MainCharacter();
-      const stone = new Stone();
+      const stone1 = new Stone(900);
+      const stone2 = new Stone(1100);
+      const stone3 = new Stone(1300);
 
-      // gameObjects.push(new MainCharacter());
-      // gameObjects.push(new Stone());
-
-      // /* main character */
-      // Chara1.onload = () => {
-      //   sizeX = 375 / 4;
-      //   sizeY = 375 / 4;
-      //   posX = 10;
-      //   posY = 500;
-      //   ctx.drawImage(Chara1, posX, posY, sizeX, sizeY);
-      //   if (DEBUG_MODE) {
-      //     ctx.strokeStyle = "purple";
-      //     ctx.lineWidth = 1;
-      //     ctx.rect(posX, posY, sizeX, sizeY);
-      //     ctx.stroke();
-      //   }
-      // };
-      // /* obstacle */
-      // Stone1.onload = () => {
-      //   sizeX = 375 / 6;
-      //   sizeY = 375 / 6;
-      //   posX = 900;
-      //   posY = 530;
-      //   ctx.drawImage(Stone1, posX, posY, sizeX, sizeY);
-      //   if (DEBUG_MODE) {
-      //     ctx.strokeStyle = "yellow";
-      //     ctx.lineWidth = 1;
-      //     ctx.rect(posX, posY, sizeX, sizeY);
-      //     ctx.stroke();
-      //   }
-      // };
+      canvas.onclick = (event) => {
+        // chara.y -= 120
+        chara.jump();
+      };
 
       setInterval(() => {
-        ctx.clearRect(0, 0, 1000, 600);
+        ctx.fillRect(0, 0, 1000, 600);
         chara.update();
-        stone.update();
-      }, 100);
+        stone1.update();
+        stone2.update();
+        stone3.update();
+      }, 33); // 30fps frame per seconds
     </script>
   </body>
 </html>
