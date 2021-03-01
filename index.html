@@ -25,8 +25,6 @@
           this.width = width;
           this.height = height;
           this.vy = 0 // 加速度
-          this.jumpFrame = 0
-          this.jumpFrameMax = 30
           this.image = new Image();
           this.image.src = "./assets/images/chara1.png";
 
@@ -34,8 +32,8 @@
         }
 
         jump() {
-          console.log("jump")
           if (this.state === "jump") {
+            // ジャンプ中にジャンプはできない
             return;
           }
           this.vy = -16
@@ -57,14 +55,16 @@
             this.y = this.y + this.vy;
             this.vy = this.vy + 0.9;
             if(this.y > 350){
+              // 着地したらjumpステート終了
               this.y = 350
               this.state = "normal"
             }
           }
           ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-
-          colliderGroup.forEach(_ => {
-            this.collidion(_)
+          
+          // 当たっているかの判定
+          colliderGroup.forEach(obstacle => {
+            this.collidion(obstacle)
           })
         }
       }
@@ -115,8 +115,8 @@
       /* メインループ */
       setInterval(() => {
         ctx.fillRect(0, 0, 1000, 600);
-        gameObjects.forEach(_ => {
-          _.update()
+        gameObjects.forEach(obj => {
+          obj.update()
         })
       }, 33); // 30fps frame per seconds
     </script>
