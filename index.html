@@ -24,12 +24,14 @@
 
       /* Images */
       class MainCharacter {
-        constructor(x = 10, y = 350, width = 90, height = 90) {
+        constructor(x = 100, y = 350, width = 90, height = 90) {
           this.x = x;
           this.y = y;
           this.state = "normal";
           this.width = width;
           this.height = height;
+          this.jumpFrame = 0
+          this.jumpFrameMax = 30
           this.image = new Image();
           this.image.src = "./assets/images/chara1.png";
         }
@@ -39,22 +41,43 @@
             return;
           }
           this.state = "jump";
-          this.y -= 120;
+          // this.y -= 120;
         }
 
         update() {
+          if(this.state === "jump"){
+            this.jumpFrame += 1
+            console.log(this.jumpFrame)
+            if(this.jumpFrame > 0 && this.jumpFrame < 7) {
+              this.y -= 14;
+            }
+            if(this.jumpFrame >= 7 && this.jumpFrame < 15) {
+              this.y -= 7;
+            }
+            if(this.jumpFrame >= 15 && this.jumpFrame < 22) {
+              this.y += 7;
+            }
+            if(this.jumpFrame >= 22 && this.jumpFrame < 29) {
+              this.y += 14;
+            }
+            if(this.jumpFrame === this.jumpFrameMax){
+              this.y = 350
+              this.jumpFrame = 0
+              this.state = "normal"
+            }
+          }
           if (DEBUG_MODE) {
             ctx.strokeStyle = "purple";
             ctx.lineWidth = 1;
             ctx.rect(this.x, this.y, this.width, this.height);
             ctx.stroke();
           }
-          if (this.y < 350) {
-            this.y += 5;
-          } else {
-            this.state = "normal";
-            this.y = 350;
-          }
+          // if (this.y < 350) {
+          //   this.y += 5;
+          // } else {
+          //   this.state = "normal";
+          //   this.y = 350;
+          // }
           ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
       }
@@ -63,7 +86,7 @@
         constructor(x = 900, y = 380, width = 60, height = 60) {
           this.x = x;
           this.y = y;
-          this.speed = 10;
+          this.speed = 8;
           this.width = width;
           this.height = height;
           this.image = new Image();
@@ -87,8 +110,8 @@
 
       const chara = new MainCharacter();
       const stone1 = new Stone(900);
-      const stone2 = new Stone(1100);
-      const stone3 = new Stone(1300);
+      const stone2 = new Stone(1250);
+      const stone3 = new Stone(1600);
 
       canvas.onclick = (event) => {
         // chara.y -= 120
