@@ -7,20 +7,13 @@
     <title>Document</title>
   </head>
   <body>
-    <canvas
-      id="canvas"
-      width="1000"
-      height="600"
-      style="background-color: mediumturquoise"
-    ></canvas>
+    <canvas id="canvas" width="1000" height="600" style="background-color: mediumturquoise"></canvas>
     <script>
-      /* Game configs */
-      const DEBUG_MODE = false;
-
       /* Get the canvas object */
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
       const gameObjects = [];
+      const colliderGroup = [];
 
       /* Images */
       class MainCharacter {
@@ -34,6 +27,8 @@
           this.jumpFrameMax = 30
           this.image = new Image();
           this.image.src = "./assets/images/chara1.png";
+
+          gameObjects.push(this)
         }
 
         jump() {
@@ -41,13 +36,21 @@
             return;
           }
           this.state = "jump";
-          // this.y -= 120;
+        }
+
+        collidion(stone) {
+          // distant
+          let distX = Math.abs(this.x - stone.x);
+          let distY = Math.abs(this.y - stone.y);
+          if(distX < 50 && distY < 80) {
+            console.log("ぶつかった！")
+            // 衝突したオブジェクトが、障害物かニンジンか判定する
+          }
         }
 
         update() {
           if(this.state === "jump"){
             this.jumpFrame += 1
-            console.log(this.jumpFrame)
             if(this.jumpFrame > 0 && this.jumpFrame < 7) {
               this.y -= 14;
             }
@@ -66,19 +69,11 @@
               this.state = "normal"
             }
           }
-          if (DEBUG_MODE) {
-            ctx.strokeStyle = "purple";
-            ctx.lineWidth = 1;
-            ctx.rect(this.x, this.y, this.width, this.height);
-            ctx.stroke();
-          }
-          // if (this.y < 350) {
-          //   this.y += 5;
-          // } else {
-          //   this.state = "normal";
-          //   this.y = 350;
-          // }
           ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+
+          colliderGroup.forEach(_ => {
+            this.collidion(_)
+          })
         }
       }
 
@@ -91,16 +86,12 @@
           this.height = height;
           this.image = new Image();
           this.image.src = "./assets/images/stone.png";
+          gameObjects.push(this)
+          colliderGroup.push(this)
         }
 
         update() {
           this.x -= this.speed;
-          if (DEBUG_MODE) {
-            ctx.strokeStyle = "purple";
-            ctx.lineWidth = 1;
-            ctx.rect(this.x, this.y, this.width, this.height);
-            ctx.stroke();
-          }
           if (this.x < 0) {
             this.x = 1000;
           }
@@ -108,22 +99,31 @@
         }
       }
 
-      const chara = new MainCharacter();
-      const stone1 = new Stone(900);
-      const stone2 = new Stone(1250);
-      const stone3 = new Stone(1600);
+      /* GameObject */
+      function init() {
+        const chara = new MainCharacter();
+        const stone1 = new Stone(900);
+        const stone2 = new Stone(1250);
+        const stone3 = new Stone(1600);
+        const stone4 = new Stone(2000);
 
-      canvas.onclick = (event) => {
-        // chara.y -= 120
-        chara.jump();
-      };
+        /* ジャンプ */
+        canvas.onclick = (event) => {
+          chara.jump();
+        };
+      }
 
+      // 初期化
+      function gameStart(){
+        init()
+      }
+
+      /* メインループ */
       setInterval(() => {
         ctx.fillRect(0, 0, 1000, 600);
-        chara.update();
-        stone1.update();
-        stone2.update();
-        stone3.update();
+        gameObjects.forEach(_ => {
+          _.update()
+        })
       }, 33); // 30fps frame per seconds
     </script>
   </body>
