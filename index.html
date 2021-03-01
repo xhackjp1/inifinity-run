@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <canvas
+      id="canvas"
+      width="1000"
+      height="600"
+      style="background-color: mediumturquoise"
+    ></canvas>
+    <script>
+      /* Game configs */
+      const DEBUG_MODE = true;
+
+      /* Get the canvas object */
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const gameObjects = [];
+
+      /* Images */
+      // const Chara1 = new Image();
+      // Chara1.src = "./chara1.png";
+      // const Stone1 = new Image();
+      // Stone1.src = "./stone.png";
+
+      class MainCharacter {
+        constructor(x = 10, y = 350, width = 90, height = 90) {
+          this.x = x;
+          this.y = y;
+          this.width = width;
+          this.height = height;
+          this.image = new Image();
+          this.image.src = "./assets/images/chara1.png";
+        }
+
+        update() {
+          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        }
+      }
+
+      class Stone {
+        constructor(x = 900, y = 380, width = 60, height = 60) {
+          this.x = x;
+          this.y = y;
+          this.speed = 20;
+          this.width = width;
+          this.height = height;
+          this.image = new Image();
+          this.image.src = "./assets/images/stone.png";
+        }
+
+        update() {
+          this.x -= this.speed;
+          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        }
+      }
+
+      const chara = new MainCharacter();
+      const stone = new Stone();
+
+      // gameObjects.push(new MainCharacter());
+      // gameObjects.push(new Stone());
+
+      // /* main character */
+      // Chara1.onload = () => {
+      //   sizeX = 375 / 4;
+      //   sizeY = 375 / 4;
+      //   posX = 10;
+      //   posY = 500;
+      //   ctx.drawImage(Chara1, posX, posY, sizeX, sizeY);
+      //   if (DEBUG_MODE) {
+      //     ctx.strokeStyle = "purple";
+      //     ctx.lineWidth = 1;
+      //     ctx.rect(posX, posY, sizeX, sizeY);
+      //     ctx.stroke();
+      //   }
+      // };
+      // /* obstacle */
+      // Stone1.onload = () => {
+      //   sizeX = 375 / 6;
+      //   sizeY = 375 / 6;
+      //   posX = 900;
+      //   posY = 530;
+      //   ctx.drawImage(Stone1, posX, posY, sizeX, sizeY);
+      //   if (DEBUG_MODE) {
+      //     ctx.strokeStyle = "yellow";
+      //     ctx.lineWidth = 1;
+      //     ctx.rect(posX, posY, sizeX, sizeY);
+      //     ctx.stroke();
+      //   }
+      // };
+
+      setInterval(() => {
+        ctx.clearRect(0, 0, 1000, 600);
+        chara.update()
+        stone.update()
+      }, 100);
+    </script>
+  </body>
+</html>
