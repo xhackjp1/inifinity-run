@@ -39,6 +39,12 @@
         }
 
         update() {
+          if (DEBUG_MODE) {
+            ctx.strokeStyle = "purple";
+            ctx.lineWidth = 1;
+            ctx.rect(this.x, this.y, this.width, this.height);
+            ctx.stroke();
+          }
           ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
       }
@@ -56,6 +62,12 @@
 
         update() {
           this.x -= this.speed;
+          if (DEBUG_MODE) {
+            ctx.strokeStyle = "purple";
+            ctx.lineWidth = 1;
+            ctx.rect(this.x, this.y, this.width, this.height);
+            ctx.stroke();
+          }
           ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
       }
@@ -97,8 +109,8 @@
 
       setInterval(() => {
         ctx.clearRect(0, 0, 1000, 600);
-        chara.update()
-        stone.update()
+        chara.update();
+        stone.update();
       }, 100);
     </script>
   </body>
