@@ -19,6 +19,8 @@
       const ctx = canvas.getContext("2d");
       const gameObjects = [];
       const colliderGroup = [];
+      const LEFT = 'left';
+      const RIGHT = 'right';
 
       class Chara {
         constructor(x = 100, y = 350, width = 45, height = 45) {
@@ -38,6 +40,49 @@
         draw() {
           ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
         }
+
+        update(type) {
+          ctx.clearRect(this.x, this.y, 45, 45);
+
+          if (type === 'left') {
+            this.x = this.x - 15
+          }
+          if (type === 'right') {
+            this.x = this.x + 15
+          }
+
+          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        }
+
+        shot() {
+          new Bullet()
+        }
+      }
+
+      class Bullet {
+        constructor(x = 475, y = 450, width = 45, height = 45) {
+          this.x = x;
+          this.y = y;
+          this.speed = 8;
+          this.width = width;
+          this.height = height;
+          this.image = new Image();
+          this.image.src = "./assets/images/4.png";
+        }
+
+        // update() {
+
+        //   ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+
+        //   // main = setInterval(() => {
+        //   //   ctx.fillRect(0, 0, 1000, 600);
+        //   //   gameObjects.forEach((obj) => {
+        //   //     obj.update();
+        //   //   });
+        //   // }, 33);
+        // }
+
+        
       }
 
       class Invader {
@@ -66,7 +111,24 @@
         }
       }
 
-      new Chara(475, 500)
+      const chara = new Chara(475, 500)
+
+      // canvas.onclick = (event) => {
+      //   chara.shot();
+      // };
+
+      document.onkeydown = (event) => {
+
+        // 左
+        if (event.keyCode === 37) {
+          chara.update(LEFT)
+        }
+        // 右
+        if (event.keyCode === 39) {
+          chara.update(RIGHT)
+        }
+
+      }
     </script>
   </body>
 </html>
