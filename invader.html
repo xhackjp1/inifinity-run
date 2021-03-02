@@ -11,7 +11,7 @@
       id="canvas"
       width="1000"
       height="600"
-      style="background-color: mediumturquoise"
+      style="background-color: black"
     ></canvas>
     <script>
       /* Get the canvas object */
@@ -55,12 +55,13 @@
         }
 
         shot() {
-          new Bullet()
+          let bullet = new Bullet()
+          bullet.update(this.x)
         }
       }
 
       class Bullet {
-        constructor(x = 475, y = 450, width = 45, height = 45) {
+        constructor(x = 475, y = 450, width = 50, height = 50) {
           this.x = x;
           this.y = y;
           this.speed = 8;
@@ -70,17 +71,37 @@
           this.image.src = "./assets/images/4.png";
         }
 
-        // update() {
+        draw(x) {
+          ctx.drawImage(this.image, x, this.y, this.width, this.height);
+        }
 
-        //   ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        update(x) {
+          console.log(11111111111)
+          this.image.onload = () => {
+            this.draw(x);
+          };
 
-        //   // main = setInterval(() => {
-        //   //   ctx.fillRect(0, 0, 1000, 600);
-        //   //   gameObjects.forEach((obj) => {
-        //   //     obj.update();
-        //   //   });
-        //   // }, 33);
-        // }
+          // 弾が動く
+          setInterval(() => {
+            this.x = x
+            ctx.clearRect(this.x, this.y, 50, 50);
+            this.y -= this.speed;
+            if (this.y < 0) {
+              this.y = -50;
+            }
+            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+          }, 33); 
+          
+          // 当たっているかの判定　foreach
+
+        }
+        
+        collision () {
+
+          let distX = Math.abs(this.x - obj.x);
+          let distY = Math.abs(this.y - obj.y);
+        }
+
 
         
       }
@@ -113,12 +134,7 @@
 
       const chara = new Chara(475, 500)
 
-      // canvas.onclick = (event) => {
-      //   chara.shot();
-      // };
-
       document.onkeydown = (event) => {
-
         // 左
         if (event.keyCode === 37) {
           chara.update(LEFT)
@@ -127,8 +143,12 @@
         if (event.keyCode === 39) {
           chara.update(RIGHT)
         }
-
+        // スペース
+        if (event.keyCode === 32) {
+          chara.shot();
+        }
       }
+
     </script>
   </body>
 </html>
