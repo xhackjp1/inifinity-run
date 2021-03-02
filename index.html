@@ -1,135 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <canvas id="canvas" width="1000" height="600" style="background-color: mediumturquoise"></canvas>
-    <button onclick="gameStart()">ゲームスタート</button>
-    <script>
-      /* Get the canvas object */
-      const canvas = document.getElementById("canvas");
-      const ctx = canvas.getContext("2d");
-      const gravity = 0.4; 
-      const gameObjects = [];
-      const colliderGroup = [];
 
-      /* Images */
-      class MainCharacter {
-        constructor(x = 100, y = 350, width = 90, height = 90) {
-          this.x = x;
-          this.y = y;
-          this.state = "normal";
-          this.width = width;
-          this.height = height;
-          this.vy = 0 // 加速度
-          this.image = new Image();
-          this.image.src = "./assets/images/chara1.png";
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    .button {
+      min-width: 100px;
+      font-family: inherit;
+      appearance: none;
+      border: 0;
+      border-radius: 5px;
+      color: #fff;
+      padding: 8px 16px;
+      font-size: 1.75rem;
+      cursor: pointer;
+      position: absolute;
+      top: 245px;
+      left: 500px;
+      transform: translateX(-50%);
+      height: 75px;
+      display: block;
+      width: 250px;
+    }
 
-          gameObjects.push(this)
+    .start-button:hover {
+      background: #4676d7;
+    }
+    .replay-button:hover {
+      background: #e06767;
+    }
+
+    .button:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px #cbd6ee;
+    }
+
+    .start-button {
+      background: blue;
+    }
+    .replay-button {
+      background: red;
+      display: none;
+      top: 375px;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="canvas" width="1000" height="600" style="background-color: mediumturquoise"></canvas>
+  <button id="js-start-button" class="button start-button" onclick="gameStart()">ゲームスタート</button>
+  <button id="js-replay-button" class="button replay-button" onclick="gameRestart()">もう1回</button>
+  <script>
+    /* Get the canvas object */
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const gravity = 0.4;
+    let gameObjects = [];
+    let colliderGroup = [];
+    let main
+
+    /* Images */
+    class MainCharacter {
+      constructor(x = 100, y = 350, width = 90, height = 90) {
+        this.x = x;
+        this.y = y;
+        this.state = "normal";
+        this.width = width;
+        this.height = height;
+        this.vy = 0 // 加速度
+        this.image = new Image();
+        this.image.src = "./assets/images/chara1.png";
+
+        gameObjects.push(this)
+      }
+
+      jump() {
+        if (this.state === "jump") {
+          // ジャンプ中にジャンプはできない
+          return;
         }
+        this.vy = -16
+        this.state = "jump";
+      }
 
-        jump() {
-          if (this.state === "jump") {
-            // ジャンプ中にジャンプはできない
-            return;
+      collidion(stone) {
+        // distant
+        let distX = Math.abs(this.x - stone.x);
+        let distY = Math.abs(this.y - stone.y);
+        if (distX < 50 && distY < 80) {
+          console.log("ぶつかった！")
+          // 衝突したオブジェクトが、障害物かニンジンか判定する
+
+          // ゲームを終了する
+          gameOver()
+        }
+      }
+
+      update() {
+        if (this.state === "jump") {
+          this.y = this.y + this.vy;
+          this.vy = this.vy + 0.9;
+          if (this.y > 350) {
+            // 着地したらjumpステート終了
+            this.y = 350
+            this.state = "normal"
           }
-          this.vy = -16
-          this.state = "jump";
         }
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 
-        collidion(stone) {
-          // distant
-          let distX = Math.abs(this.x - stone.x);
-          let distY = Math.abs(this.y - stone.y);
-          if(distX < 50 && distY < 80) {
-            console.log("ぶつかった！")
-            // 衝突したオブジェクトが、障害物かニンジンか判定する
+        // 当たっているかの判定
+        colliderGroup.forEach(obstacle => {
+          this.collidion(obstacle)
+        })
+      }
+    }
 
-            // ゲームを終了する
-            gameOver()
-          }
-        }
-
-        update() {
-          if(this.state === "jump"){
-            this.y = this.y + this.vy;
-            this.vy = this.vy + 0.9;
-            if(this.y > 350){
-              // 着地したらjumpステート終了
-              this.y = 350
-              this.state = "normal"
-            }
-          }
-          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-          
-          // 当たっているかの判定
-          colliderGroup.forEach(obstacle => {
-            this.collidion(obstacle)
-          })
-        }
+    class Stone {
+      constructor(x = 900, y = 380, width = 60, height = 60) {
+        this.x = x;
+        this.y = y;
+        this.speed = 8;
+        this.width = width;
+        this.height = height;
+        this.image = new Image();
+        this.image.src = "./assets/images/stone.png";
+        gameObjects.push(this)
+        colliderGroup.push(this)
       }
 
-      class Stone {
-        constructor(x = 900, y = 380, width = 60, height = 60) {
-          this.x = x;
-          this.y = y;
-          this.speed = 8;
-          this.width = width;
-          this.height = height;
-          this.image = new Image();
-          this.image.src = "./assets/images/stone.png";
-          gameObjects.push(this)
-          colliderGroup.push(this)
+      update() {
+        this.x -= this.speed;
+        if (this.x < 0) {
+          this.x = 1000;
         }
-
-        update() {
-          this.x -= this.speed;
-          if (this.x < 0) {
-            this.x = 1000;
-          }
-          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-        }
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
       }
+    }
 
-      /* GameObject */
-      function init() {
-        const chara = new MainCharacter();
-        const stone1 = new Stone(900);
-        const stone2 = new Stone(1250);
-        const stone3 = new Stone(1600);
-        const stone4 = new Stone(2000);
+    /* GameObject */
+    function init() {
 
-        /* ジャンプ */
-        canvas.onclick = (event) => {
-          chara.jump();
-        };
-      }
+      gameObjects = [];
+      colliderGroup = [];
 
-      // 初期化
-      function gameStart(){
-        init()
-      }
+      // スタートボタン非表示
+      document.getElementById('js-start-button').style.display = "none";
 
-      // ゲーム終了
-      function gameOver() {
-        ctx.font = 'bold 72pt sans-serif';
-        ctx.fillStyle = 'red';
-        ctx.fillText('GAME OVER', 200, 300); 
+      ctx.fillStyle = 'black';
 
-        clearInterval(main)
-      }
+      const chara = new MainCharacter();
+      const stone1 = new Stone(900);
+      const stone2 = new Stone(1250);
+      const stone3 = new Stone(1600);
+      const stone4 = new Stone(2000);
 
+      /* ジャンプ */
+      canvas.onclick = (event) => {
+        chara.jump();
+      };
+    }
+
+    // 初期化
+    function gameStart() {
+      init()
       /* メインループ */
-      const main = setInterval(() => {
+      main = setInterval(() => {
         ctx.fillRect(0, 0, 1000, 600);
         gameObjects.forEach(obj => {
           obj.update()
         })
       }, 33); // 30fps frame per seconds
-    </script>
-  </body>
+    }
+
+    // ゲーム終了
+    function gameOver() {
+      ctx.font = 'bold 72pt sans-serif';
+      ctx.fillStyle = 'red';
+      ctx.fillText('GAME OVER', 200, 300);
+
+      clearInterval(main)
+
+      document.getElementById('js-replay-button').style.display = "block";
+    }
+
+    function gameRestart() {
+      console.log(11111)
+      document.getElementById('js-replay-button').style.display = "none";
+        gameStart()
+
+    }
+  </script>
+</body>
+
 </html>
