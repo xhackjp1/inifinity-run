@@ -73,6 +73,7 @@
         this.vy = 0 // 加速度
         this.image = new Image();
         this.image.src = "./assets/images/chara1.png";
+        this.jumpPower = -16
 
         gameObjects.push(this)
       }
@@ -82,17 +83,25 @@
           // ジャンプ中にジャンプはできない
           return;
         }
-        this.vy = -16
+        this.vy = this.jumpPower
         this.state = "jump";
       }
 
-      collidion(stone) {
+      collidion(obj) {
         // distant
-        let distX = Math.abs(this.x - stone.x);
-        let distY = Math.abs(this.y - stone.y);
+        let distX = Math.abs(this.x - obj.x);
+        let distY = Math.abs(this.y - obj.y);
         if (distX < 50 && distY < 80) {
           console.log("ぶつかった！")
           // 衝突したオブジェクトが、障害物かニンジンか判定する
+          console.log(obj.constructor.name)
+          // console.log(obj.name)
+          if(obj.constructor.name === 'Carrot') {
+            obj.x = 3000
+            this.jumpPower = this.jumpPower - 4
+            return
+          }
+
 
           // ゲームを終了する
           gameOver()
@@ -140,6 +149,28 @@
       }
     }
 
+    class Carrot {
+        constructor(x = 900, y = 380, width = 60, height = 60) {
+          this.x = x;
+          this.y = y;
+          this.speed = 8;
+          this.width = width;
+          this.height = height;
+          this.image = new Image();
+          this.image.src = "./assets/images/carrot.png";
+          gameObjects.push(this)
+          colliderGroup.push(this)
+        }
+
+        update() {
+          this.x -= this.speed;
+          if (this.x < 0) {
+            this.x = 1000;
+          }
+          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        }
+      }
+
     /* GameObject */
     function init() {
 
@@ -152,10 +183,12 @@
       ctx.fillStyle = 'black';
 
       const chara = new MainCharacter();
-      const stone1 = new Stone(900);
       const stone2 = new Stone(1250);
+      const stone1 = new Stone(1000);
       const stone3 = new Stone(1600);
       const stone4 = new Stone(2000);
+      new Carrot(600)
+      new Carrot(1200)
 
       /* ジャンプ */
       canvas.onclick = (event) => {
