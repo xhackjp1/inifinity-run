@@ -64,20 +64,23 @@
   <canvas id="canvas" width="1000" height="600" style="background-color: black"></canvas>
   <button class="button start-button" id="js-start-button" onclick="gameStart()">スタート</button>
   <span id="js-score">SCORE: <span id="js-score-text">0</span></span>
+  <span id="js-timer"></span>
   <script>
     /* Get the canvas object */
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
-    const gameObjects = [];
+    let gameObjects = [];
     const colliderGroup = [];
-    const invaderGroup = [];
+    let invaderGroup = [];
     const LEFT = 'left';
     const RIGHT = 'right';
     let chara = null
     let MainThreadId = null
     let score = 0
+    let timer = 10
     class Chara {
       constructor(x = 100, y = 350, width = 45, height = 45) {
+        this.id = generateUuid()
         this.x = x;
         this.y = y;
         this.width = width;
@@ -107,7 +110,8 @@
       }
     }
     class Bullet {
-      constructor(x = 475, y = 450, width = 40, height = 80) {
+      constructor(x = 475, y = 450, width = 30, height = 40) {
+        this.id = generateUuid()
         this.x = x;
         this.y = y;
         this.speed = 7;
@@ -142,12 +146,15 @@
           // 弾を消す
           this.x = -1000
           // 敵を消す
-          obj.x = 1000
+          // obj.x = 1000
+          invaderGroup = invaderGroup.filter(v => v.id !== obj.id)
+          gameObjects = gameObjects.filter(v => v.id !== obj.id)
         }
       }
     }
     class Invader {
       constructor(x = 100, y = 350, width = 45, height = 45) {
+        this.id = generateUuid()
         this.x = x;
         this.y = y;
         this.setPositionX = x
@@ -201,7 +208,7 @@
         }
       }
       chara = new Chara(475, 500)
-
+      countDown()
       MainThreadId = setInterval(() => {
         // 1フレームごとに処理すべきことはこの中に書く
         ctx.clearRect(0, 0, 1000, 600)
@@ -221,6 +228,31 @@
     function changeScore() {
       document.getElementById("js-score-text").innerHTML = score;
     }
+    function countDown() {
+      // document.getElementById('js-timer').textContent = timer.toString();
+      var id = setInterval(function () {
+        timer--;
+        console.log(timer)
+        document.getElementById('js-timer').textContent = timer.toString();
+        if (timer <= 0) clearInterval(id);
+      }, 1000);
+    }
+    function generateUuid() {
+        // https://github.com/GoogleChrome/chrome-platform-analytics/blob/master/src/internal/identifier.js
+        // const FORMAT: string = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
+        let chars = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".split("");
+        for (let i = 0, len = chars.length; i < len; i++) {
+          switch (chars[i]) {
+            case "x":
+              chars[i] = Math.floor(Math.random() * 16).toString(16);
+              break;
+            case "y":
+              chars[i] = (Math.floor(Math.random() * 4) + 8).toString(16);
+              break;
+          }
+        }
+        return chars.join("");
+      }
   </script>
 </body>
 
