@@ -10,6 +10,7 @@
 
 <body>
   <canvas id="canvas" width="1000" height="600" style="background-color: black"></canvas>
+  <button onclick="gameStart()">スタート</button>
   <script>
     /* Get the canvas object */
     const canvas = document.getElementById("canvas");
@@ -20,6 +21,7 @@
     const LEFT = 'left';
     const RIGHT = 'right';
     let MainThreadId = null
+    let bullet = null
     class Chara {
       constructor(x = 100, y = 350, width = 45, height = 45) {
         this.x = x;
@@ -47,11 +49,11 @@
         ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
       }
       shot() {
-        let bullet = new Bullet(this.x)
+        new Bullet(this.x)
       }
     }
     class Bullet {
-      constructor(x = 475, y = 450, width = 50, height = 50) {
+      constructor(x = 475, y = 450, width = 40, height = 80) {
         this.x = x;
         this.y = y;
         this.speed = 5;
@@ -67,22 +69,25 @@
       update() {
         this.y -= this.speed;
         if (this.y < 0) {
-          this.y = -50;
+          this.y = -150;
         }
-        console.log(':tama: ', this.x, this.y)
         ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-        // // // 当たっているかの判定
-        // invaderGroup.forEach(obj => {
-        //   console.log(obj.x, obj.y)
-        //   // this.collision(obj)
-        // })
+        // // 当たっているかの判定
+        invaderGroup.forEach(obj => {
+          this.collision(obj)
+        })
       }
-      // 弾にあたっていないかチェック
-      collision() {
+      // 敵にあたっていないかチェック
+      collision(obj) {
         let distX = Math.abs(this.x - obj.x);
         let distY = Math.abs(this.y - obj.y);
-        if (distX < 50 && distY < 80) {
+
+        if (distX < 50 && distY < 50) {
           console.log('当たった')
+          // 弾を消す
+          this.x = 1000
+          // 敵を消す
+          obj.x = 1000
         }
       }
     }
