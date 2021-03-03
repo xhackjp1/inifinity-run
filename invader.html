@@ -1,164 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <canvas
-      id="canvas"
-      width="1000"
-      height="600"
-      style="background-color: black"
-    ></canvas>
-    <script>
-      /* Get the canvas object */
-      const canvas = document.getElementById("canvas");
-      const ctx = canvas.getContext("2d");
-      const gameObjects = [];
-      const colliderGroup = [];
-      const invaderGroup = [];
-      const LEFT = 'left';
-      const RIGHT = 'right';
 
-      class Chara {
-        constructor(x = 100, y = 350, width = 45, height = 45) {
-          this.x = x;
-          this.y = y;
-          this.width = width;
-          this.height = height;
-          this.image = new Image();
-          this.image.src = "./assets/images/3.png";
-          this.image.onload = () => {
-            this.draw();
-          };
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
 
-          gameObjects.push(this);
+<body>
+  <canvas id="canvas" width="1000" height="600" style="background-color: black"></canvas>
+  <script>
+    /* Get the canvas object */
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const gameObjects = [];
+    const colliderGroup = [];
+    const invaderGroup = [];
+    const LEFT = 'left';
+    const RIGHT = 'right';
+    let MainThreadId = null
+    class Chara {
+      constructor(x = 100, y = 350, width = 45, height = 45) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.image = new Image();
+        this.image.src = "./assets/images/3.png";
+        this.image.onload = () => {
+          this.draw();
+        };
+        gameObjects.push(this);
+      }
+      draw() {
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      }
+      update(type) {
+        ctx.clearRect(this.x, this.y, 45, 45);
+        if (type === 'left') {
+          this.x = this.x - 15
         }
-
-        draw() {
-          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        if (type === 'right') {
+          this.x = this.x + 15
         }
-
-        update(type) {
-          ctx.clearRect(this.x, this.y, 45, 45);
-
-          if (type === 'left') {
-            this.x = this.x - 15
-          }
-          if (type === 'right') {
-            this.x = this.x + 15
-          }
-
-          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      }
+      shot() {
+        let bullet = new Bullet(this.x)
+      }
+    }
+    class Bullet {
+      constructor(x = 475, y = 450, width = 50, height = 50) {
+        this.x = x;
+        this.y = y;
+        this.speed = 5;
+        this.width = width;
+        this.height = height;
+        this.image = new Image();
+        this.image.src = "./assets/images/4.png";
+        gameObjects.push(this)
+      }
+      draw() {
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      }
+      update() {
+        this.y -= this.speed;
+        if (this.y < 0) {
+          this.y = -50;
         }
-
-        shot() {
-          let bullet = new Bullet()
-          bullet.update(this.x)
+        console.log(':tama: ', this.x, this.y)
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        // // // 当たっているかの判定
+        // invaderGroup.forEach(obj => {
+        //   console.log(obj.x, obj.y)
+        //   // this.collision(obj)
+        // })
+      }
+      // 弾にあたっていないかチェック
+      collision() {
+        let distX = Math.abs(this.x - obj.x);
+        let distY = Math.abs(this.y - obj.y);
+        if (distX < 50 && distY < 80) {
+          console.log('当たった')
         }
       }
-
-      class Bullet {
-        constructor(x = 475, y = 450, width = 50, height = 50) {
-          this.x = x;
-          this.y = y;
-          this.speed = 5;
-          this.width = width;
-          this.height = height;
-          this.image = new Image();
-          this.image.src = "./assets/images/4.png";
-          // this.update()
-        }
-
-        draw(x) {
-          ctx.drawImage(this.image, x, this.y, this.width, this.height);
-        }
-
-        update(x) {
-          this.image.onload = () => {
-            this.draw(x);
-          };
-
-          // 弾が動く
-          setInterval(() => {
-            this.x = x
-            ctx.clearRect(this.x, this.y, 50, 50);
-            this.y -= this.speed;
-            if (this.y < 0) {
-              this.y = -50;
-            }
-            console.log(':tama: ',this.x, this.y)
-            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-          }, 33); 
-          
-          // // 当たっているかの判定
-          invaderGroup.forEach(obj => {
-            console.log(obj.x, obj.y)
-            // this.collision(obj)
-          })
-        }
-
-        // 弾にあたっていないかチェック
-        collision() {
-          let distX = Math.abs(this.x - obj.x);
-          let distY = Math.abs(this.y - obj.y);
-          if (distX < 50 && distY < 80) {
-            console.log('当たった')
-          }
-        }
+    }
+    class Invader {
+      constructor(x = 100, y = 350, width = 45, height = 45) {
+        this.x = x;
+        this.y = y;
+        this.setPositionX = x
+        this.moveSpeed = 4
+        this.width = width;
+        this.height = height;
+        this.image = new Image();
+        this.image.src = "./assets/images/1.png";
+        this.image.onload = () => {
+          this.appear();
+        };
+        invaderGroup.push(this)
+        gameObjects.push(this);
       }
-
-      class Invader {
-        constructor(x = 100, y = 350, width = 45, height = 45) {
-          this.x = x;
-          this.y = y;
-          this.width = width;
-          this.height = height;
-          this.image = new Image();
-          this.image.src = "./assets/images/1.png";
-          this.image.onload = () => {
-            this.draw();
-          };
-          invaderGroup.push(this)
-          gameObjects.push(this);
-        }
-
-        draw() {
-          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-        }
-
-        update () {
-          
-        }
-
+      // 初回描画
+      appear() {
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
       }
-
-      for(let i=0;i<9;i++){
-        for(let j=0;j<4;j++){
-          new Invader(75 + 100*i, 50 + 100*j);
+      // ゲーム進行中の描画
+      update() {
+        this.x += this.moveSpeed
+        if (this.setPositionX - this.x < -25 || this.setPositionX - this.x > 25) {
+          this.moveSpeed = this.moveSpeed * -1
         }
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
       }
-
-      const chara = new Chara(475, 500)
-
-      document.onkeydown = (event) => {
-        // 左
-        if (event.keyCode === 37) {
-          chara.update(LEFT)
-        }
-        // 右
-        if (event.keyCode === 39) {
-          chara.update(RIGHT)
-        }
-        // スペース
-        if (event.keyCode === 32) {
-          chara.shot();
-        }
+    }
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 4; j++) {
+        new Invader(75 + 100 * i, 50 + 100 * j);
       }
+    }
+    const chara = new Chara(475, 500)
+    document.onkeydown = (event) => {
+      // 左
+      if (event.keyCode === 37) {
+        chara.update(LEFT)
+      }
+      // 右
+      if (event.keyCode === 39) {
+        chara.update(RIGHT)
+      }
+      // スペース
+      if (event.keyCode === 32) {
+        chara.shot();
+      }
+    }
+    // フレームの制御
+    function gameStart() {
+      MainThreadId = setInterval(() => {
+        // 1フレームごとに処理すべきことはこの中に書く
+        ctx.clearRect(0, 0, 1000, 600)
+        gameObjects.forEach(obj => {
+          // GameObjectの描画処理と、判定処理などはupdateの中に書く
+          obj.update()
+        })
+      }, 33)
+    }
+    function puase() {
+      clearInterval(MainThreadId)
+    }
+    function restart() {
+      gameStart()
+    }
+  </script>
+</body>
 
-    </script>
-  </body>
 </html>
