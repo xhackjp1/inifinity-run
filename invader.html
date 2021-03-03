@@ -6,7 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
   <style>
+    html {
+      font-family: 'DotGothic16', sans-serif;
+    }
     .button {
       min-width: 100px;
       font-family: inherit;
@@ -18,7 +23,7 @@
       font-size: 1.75rem;
       cursor: pointer;
       position: absolute;
-      top: 245px;
+      top: 345px;
       left: 500px;
       transform: translateX(-50%);
       height: 75px;
@@ -27,7 +32,8 @@
     }
 
     .start-button:hover {
-      background: #4676d7;
+      /* background: #4676d7; */
+      background: #e06767;
     }
 
     .replay-button:hover {
@@ -40,7 +46,7 @@
     }
 
     .start-button {
-      background: blue;
+      background: red;
     }
 
     .replay-button {
@@ -57,14 +63,60 @@
       font-size: 24px;
       left: 30px;
     }
+
+    .logo {
+      display: inline-block;
+      font-size: 65px;
+      color: #DA8E00;
+      background: linear-gradient(0deg, rgba(247,210,5,1) 0%, rgba(242,225,171,1) 48%, rgba(254,254,254,1) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      position: absolute;
+      left: 31%;
+      text-align: center;
+      line-height: 1;
+      top: 50px;
+    }
+    .logo-text {
+      font-size: 25px;
+      top: 233px;
+    }
+    
+    .item {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      bottom: 360px;
+    }
+    .item-one {
+      left: 150px;
+    }
+    .item-two {
+      left: 350px;
+    }
+    .item-three {
+      left: 550px;
+    }
+    .item-four {
+      left: 750px;
+    }
   </style>
 </head>
 
 <body>
+  <!-- <span id="js-timer"></span> -->
   <canvas id="canvas" width="1000" height="600" style="background-color: black"></canvas>
-  <button class="button start-button" id="js-start-button" onclick="gameStart()">スタート</button>
   <span id="js-score">SCORE: <span id="js-score-text">0</span></span>
-  <span id="js-timer"></span>
+  <div id="js-first-obj">
+    <button class="button start-button" id="js-start-button" onclick="gameStart()">スタート</button>
+    <p class="logo">SPACE<br />INVADER</p>
+    <p class="logo logo-text">スペースインベーダー</p>
+    <img class="item item-one" src="./assets/images/1.png" alt="">
+    <img class="item item-two" src="./assets/images/3.png" alt="">
+    <img class="item item-three" src="./assets/images/1.png" alt="">
+    <img class="item item-four" src="./assets/images/3.png" alt="">
+  </div>
   <script>
     /* Get the canvas object */
     const canvas = document.getElementById("canvas");
@@ -117,7 +169,7 @@
     }
 
     class Chara extends GameObject {
-      constructor(x = 100, y = 350, width = 45, height = 45, image = "./assets/images/3.png") {
+      constructor(x = 100, y = 350, width = 45, height = 45, image = "./assets/images/2.png") {
         super(x, y, width, height, image)
       }
 
@@ -163,7 +215,6 @@
           // 弾を消す
           this.x = -1000
           // 敵を消す
-          // obj.x = 1000
           invaderGroup = invaderGroup.filter(v => v.id !== obj.id)
           gameObjects = gameObjects.filter(v => v.id !== obj.id)
         }
@@ -207,7 +258,7 @@
 
     // フレームの制御
     function gameStart() {
-      document.getElementById('js-start-button').style.display = "none";
+      document.getElementById('js-first-obj').style.display = "none";
       document.getElementById('js-score').style.display = "block";
       for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 4; j++) {
