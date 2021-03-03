@@ -78,23 +78,49 @@
     let MainThreadId = null
     let score = 0
     let timer = 10
-    class Chara {
-      constructor(x = 100, y = 350, width = 45, height = 45) {
-        this.id = generateUuid()
+
+    class GameObject {
+      constructor(x, y, width, height, image) {
+        this.id = this.generateUuid()
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.image = new Image();
-        this.image.src = "./assets/images/3.png";
+        this.image.src = image
         this.image.onload = () => {
           this.draw();
         };
         gameObjects.push(this);
       }
+
       draw() {
         ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
       }
+
+      generateUuid() {
+        // https://github.com/GoogleChrome/chrome-platform-analytics/blob/master/src/internal/identifier.js
+        // const FORMAT: string = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
+        let chars = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".split("");
+        for (let i = 0, len = chars.length; i < len; i++) {
+          switch (chars[i]) {
+            case "x":
+              chars[i] = Math.floor(Math.random() * 16).toString(16);
+              break;
+            case "y":
+              chars[i] = (Math.floor(Math.random() * 4) + 8).toString(16);
+              break;
+          }
+        }
+        return chars.join("");
+      }
+    }
+
+    class Chara extends GameObject {
+      constructor(x = 100, y = 350, width = 45, height = 45, image = "./assets/images/3.png") {
+        super(x, y, width, height, image)
+      }
+
       update(type) {
         ctx.clearRect(this.x, this.y, 45, 45);
         if (type === 'left') {
@@ -109,21 +135,12 @@
         new Bullet(this.x)
       }
     }
-    class Bullet {
-      constructor(x = 475, y = 450, width = 30, height = 40) {
-        this.id = generateUuid()
-        this.x = x;
-        this.y = y;
+    class Bullet extends GameObject {
+      constructor(x = 475, y = 450, width = 30, height = 40, image = "./assets/images/4.png") {
+        super(x, y, width, height, image)
         this.speed = 7;
-        this.width = width;
-        this.height = height;
-        this.image = new Image();
-        this.image.src = "./assets/images/4.png";
-        gameObjects.push(this)
       }
-      draw() {
-        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-      }
+
       update() {
         this.y -= this.speed;
         if (this.y < 0) {
@@ -152,22 +169,12 @@
         }
       }
     }
-    class Invader {
-      constructor(x = 100, y = 350, width = 45, height = 45) {
-        this.id = generateUuid()
-        this.x = x;
-        this.y = y;
+    class Invader extends GameObject {
+      constructor(x = 100, y = 350, width = 45, height = 45, image = "./assets/images/1.png") {
+        super(x, y, width, height, image)
         this.setPositionX = x
         this.moveSpeed = 4
-        this.width = width;
-        this.height = height;
-        this.image = new Image();
-        this.image.src = "./assets/images/1.png";
-        this.image.onload = () => {
-          this.appear();
-        };
         invaderGroup.push(this)
-        gameObjects.push(this);
       }
       // 初回描画
       appear() {
@@ -237,22 +244,6 @@
         if (timer <= 0) clearInterval(id);
       }, 1000);
     }
-    function generateUuid() {
-        // https://github.com/GoogleChrome/chrome-platform-analytics/blob/master/src/internal/identifier.js
-        // const FORMAT: string = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
-        let chars = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".split("");
-        for (let i = 0, len = chars.length; i < len; i++) {
-          switch (chars[i]) {
-            case "x":
-              chars[i] = Math.floor(Math.random() * 16).toString(16);
-              break;
-            case "y":
-              chars[i] = (Math.floor(Math.random() * 4) + 8).toString(16);
-              break;
-          }
-        }
-        return chars.join("");
-      }
   </script>
 </body>
 
