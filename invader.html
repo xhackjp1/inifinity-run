@@ -6,12 +6,64 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
+  <style>
+    .button {
+      min-width: 100px;
+      font-family: inherit;
+      appearance: none;
+      border: 0;
+      border-radius: 5px;
+      color: #fff;
+      padding: 8px 16px;
+      font-size: 1.75rem;
+      cursor: pointer;
+      position: absolute;
+      top: 245px;
+      left: 500px;
+      transform: translateX(-50%);
+      height: 75px;
+      display: block;
+      width: 250px;
+    }
+
+    .start-button:hover {
+      background: #4676d7;
+    }
+
+    .replay-button:hover {
+      background: #e06767;
+    }
+
+    .button:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px #cbd6ee;
+    }
+
+    .start-button {
+      background: blue;
+    }
+
+    .replay-button {
+      background: red;
+      display: none;
+      top: 375px;
+    }
+
+    #js-score {
+      display: none;
+      position: absolute;
+      top: 20px;
+      color: #fff;
+      font-size: 24px;
+      left: 30px;
+    }
+  </style>
 </head>
 
 <body>
   <canvas id="canvas" width="1000" height="600" style="background-color: black"></canvas>
-  <button onclick="gameStart()">スタート</button>
-  <span>SCORE: <span id="js-score">0</span></span>
+  <button class="button start-button" id="js-start-button" onclick="gameStart()">スタート</button>
+  <span id="js-score">SCORE: <span id="js-score-text">0</span></span>
   <script>
     /* Get the canvas object */
     const canvas = document.getElementById("canvas");
@@ -21,6 +73,7 @@
     const invaderGroup = [];
     const LEFT = 'left';
     const RIGHT = 'right';
+    let chara = null
     let MainThreadId = null
     let score = 0
     class Chara {
@@ -57,7 +110,7 @@
       constructor(x = 475, y = 450, width = 40, height = 80) {
         this.x = x;
         this.y = y;
-        this.speed = 5;
+        this.speed = 7;
         this.width = width;
         this.height = height;
         this.image = new Image();
@@ -98,7 +151,7 @@
         this.x = x;
         this.y = y;
         this.setPositionX = x
-        this.moveSpeed = 1
+        this.moveSpeed = 4
         this.width = width;
         this.height = height;
         this.image = new Image();
@@ -122,12 +175,7 @@
         ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
       }
     }
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 4; j++) {
-        new Invader(75 + 100 * i, 50 + 100 * j);
-      }
-    }
-    const chara = new Chara(475, 500)
+
     document.onkeydown = (event) => {
       // 左
       if (event.keyCode === 37) {
@@ -142,8 +190,18 @@
         chara.shot();
       }
     }
+
     // フレームの制御
     function gameStart() {
+      document.getElementById('js-start-button').style.display = "none";
+      document.getElementById('js-score').style.display = "block";
+      for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 4; j++) {
+          new Invader(75 + 100 * i, 50 + 100 * j);
+        }
+      }
+      chara = new Chara(475, 500)
+
       MainThreadId = setInterval(() => {
         // 1フレームごとに処理すべきことはこの中に書く
         ctx.clearRect(0, 0, 1000, 600)
@@ -161,7 +219,7 @@
       gameStart()
     }
     function changeScore() {
-      document.getElementById("js-score").innerHTML = score;
+      document.getElementById("js-score-text").innerHTML = score;
     }
   </script>
 </body>
