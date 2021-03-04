@@ -8,12 +8,14 @@
   <title>Document</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet" />
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
   <style>
     html {
       font-family: "DotGothic16", sans-serif;
     }
 
     .button {
+      display: block;
       min-width: 100px;
       font-family: inherit;
       appearance: none;
@@ -59,10 +61,18 @@
       background: red;
     }
 
-    .replay-button {
-      background: red;
+    .share-button {
+      text-decoration: none;
+      background: rgb(28 161 242);
       display: none;
       top: 375px;
+      text-align: center;
+      height: 60px;
+      line-height: 2;
+    }
+
+    .share-button:hover {
+      background: rgb(28 179 242);
     }
 
     #js-score {
@@ -139,6 +149,7 @@
   <button class="button next-button" id="js-next-button" onclick="gameController.gameContinue()">
     次のステージへ
   </button>
+  <a target="_blank" id="js-share-button" class="button share-button" href="http://twitter.com/share?url=https://twitter.com/home&text=インベーダーゲームで遊んだよ！">Twitterでシェア</a>
   <script>
     /* Get the canvas object */
     const canvas = document.getElementById("canvas");
@@ -231,7 +242,7 @@
         if (this.y < 0) {
           this.y = -150;
         }
-        ctx.drawImage(this.image, this.x , this.y, this.width, this.height);
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
         // // 当たっているかの判定
         invaderGroup.forEach((obj) => {
           this.collision(obj);
@@ -314,7 +325,7 @@
             if (invaderGroup.length === 0) {
               console.log("クリア");
               this.pause()
-              this.continue()
+              this.continueOrEnd()
             }
           });
           this.changeScore();
@@ -342,12 +353,17 @@
         };
       }
 
-      continue() {
-        this.gameState = 'continue'
-        this.setKeyAction()
-        ctx.fillRect(0, 0, 1000, 600);
-        document.getElementById("js-next-button").style.display = "block";
-        document.getElementById("js-score").style.display = "none";
+      continueOrEnd() {
+        if (this.sceneId === 4) {
+          document.getElementById("js-score").style.display = "none";
+          this.end()
+        } else {
+          this.gameState = 'continue'
+          this.setKeyAction()
+          ctx.fillRect(0, 0, 1000, 600);
+          document.getElementById("js-next-button").style.display = "block";
+          document.getElementById("js-score").style.display = "none";
+        }
       }
 
       gameContinue() {
@@ -380,7 +396,7 @@
               new Invader(175 + 100 * i, 80 + 100 * j);
             }
           }
-
+        // new Invader(175 + 100, 80 + 100);
         } else if (this.sceneId === 2) {
           for (let i = 0; i < 7; i++) {
             for (let j = 0; j < 3; j++) {
@@ -400,6 +416,15 @@
             }
           }
         }
+      }
+
+      end() {
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, 1000, 600);
+        ctx.font = 'bold 72pt sans-serif';
+        ctx.fillStyle = "red";
+        ctx.fillText('Congratulations！', 50, 300);
+        document.getElementById("js-share-button").style.display = "block";
       }
     }
 
