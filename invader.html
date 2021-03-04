@@ -60,7 +60,7 @@
       position: absolute;
       top: 20px;
       color: #fff;
-      font-size: 24px;
+      font-size: 28px;
       left: 30px;
     }
 
@@ -73,7 +73,7 @@
       -webkit-text-fill-color: transparent;
       font-weight: bold;
       position: absolute;
-      left: 31%;
+      left: 380px;
       text-align: center;
       line-height: 1;
       top: 50px;
@@ -105,7 +105,6 @@
 </head>
 
 <body>
-  <!-- <span id="js-timer"></span> -->
   <canvas id="canvas" width="1000" height="600" style="background-color: black"></canvas>
   <span id="js-score">SCORE: <span id="js-score-text">0</span></span>
   <div id="js-first-obj">
@@ -188,7 +187,7 @@
       }
     }
     class Bullet extends GameObject {
-      constructor(x = 475, y = 450, width = 30, height = 40, image = "./assets/images/4.png") {
+      constructor(x = 475, y = 450, width = 10, height = 30, image = "./assets/images/4.png") {
         super(x, y, width, height, image)
         this.speed = 7;
       }
@@ -266,7 +265,7 @@
         }
       }
       chara = new Chara(475, 500)
-      countDown()
+
       MainThreadId = setInterval(() => {
         // 1フレームごとに処理すべきことはこの中に書く
         ctx.clearRect(0, 0, 1000, 600)
@@ -285,15 +284,6 @@
     }
     function changeScore() {
       document.getElementById("js-score-text").innerHTML = score;
-    }
-    function countDown() {
-      // document.getElementById('js-timer').textContent = timer.toString();
-      var id = setInterval(function () {
-        timer--;
-        console.log(timer)
-        document.getElementById('js-timer').textContent = timer.toString();
-        if (timer <= 0) clearInterval(id);
-      }, 1000);
     }
   </script>
 </body>
