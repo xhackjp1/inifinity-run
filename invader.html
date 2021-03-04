@@ -1,353 +1,413 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      html {
-        font-family: "DotGothic16", sans-serif;
-      }
-      .button {
-        min-width: 100px;
-        font-family: inherit;
-        appearance: none;
-        border: 0;
-        border-radius: 5px;
-        color: #fff;
-        padding: 8px 16px;
-        font-size: 1.75rem;
-        cursor: pointer;
-        position: absolute;
-        top: 345px;
-        left: 500px;
-        transform: translateX(-50%);
-        height: 75px;
-        display: block;
-        width: 250px;
-      }
 
-      .start-button:hover {
-        /* background: #4676d7; */
-        background: #e06767;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet" />
+  <style>
+    html {
+      font-family: "DotGothic16", sans-serif;
+    }
 
-      .replay-button:hover {
-        background: #e06767;
-      }
+    .button {
+      min-width: 100px;
+      font-family: inherit;
+      appearance: none;
+      border: 0;
+      border-radius: 5px;
+      color: #fff;
+      padding: 8px 16px;
+      font-size: 1.75rem;
+      cursor: pointer;
+      position: absolute;
+      top: 345px;
+      left: 500px;
+      transform: translateX(-50%);
+      height: 75px;
+      width: 250px;
+      transition: 0.3s;
+    }
 
-      .button:focus {
-        outline: none;
-        box-shadow: 0 0 0 4px #cbd6ee;
-      }
+    .start-button {
+      display: block;
+    }
 
-      .start-button {
-        background: red;
-      }
+    .start-button:hover {
+      background: #e06767;
+    }
 
-      .replay-button {
-        background: red;
-        display: none;
-        top: 375px;
-      }
+    .next-button {
+      background: blue;
+      display: none;
+      top: 260px;
+    }
 
-      #js-score {
-        display: none;
-        position: absolute;
-        top: 20px;
-        color: #fff;
-        font-size: 28px;
-        left: 30px;
-      }
+    .next-button:hover {
+      background: #4676d7;
+    }
 
-      .logo {
-        display: inline-block;
-        font-size: 65px;
-        color: #da8e00;
-        background: linear-gradient(
-          0deg,
+    .button:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px #cbd6ee;
+    }
+
+    .start-button {
+      background: red;
+    }
+
+    .replay-button {
+      background: red;
+      display: none;
+      top: 375px;
+    }
+
+    #js-score {
+      display: none;
+      position: absolute;
+      top: 20px;
+      color: #fff;
+      font-size: 28px;
+      left: 30px;
+    }
+
+    .logo {
+      display: inline-block;
+      font-size: 65px;
+      color: #da8e00;
+      background: linear-gradient(0deg,
           rgba(247, 210, 5, 1) 0%,
           rgba(242, 225, 171, 1) 48%,
-          rgba(254, 254, 254, 1) 100%
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: bold;
-        position: absolute;
-        left: 380px;
-        text-align: center;
-        line-height: 1;
-        top: 50px;
-      }
-      .logo-text {
-        font-size: 25px;
-        top: 233px;
+          rgba(254, 254, 254, 1) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      position: absolute;
+      left: 380px;
+      text-align: center;
+      line-height: 1;
+      top: 50px;
+    }
+
+    .logo-text {
+      font-size: 25px;
+      top: 233px;
+    }
+
+    .item {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      bottom: 360px;
+    }
+
+    .item-one {
+      left: 150px;
+    }
+
+    .item-two {
+      left: 350px;
+    }
+
+    .item-three {
+      left: 550px;
+    }
+
+    .item-four {
+      left: 750px;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="canvas" width="1000" height="600" style="background-color: black"></canvas>
+  <span id="js-score">SCORE: <span id="js-score-text">0</span></span>
+  <div id="js-first-obj">
+    <button class="button start-button" id="js-start-button" onclick="gameController.gameStart()">
+      スタート
+    </button>
+    <p class="logo">SPACE<br />INVADER</p>
+    <p class="logo logo-text">スペースインベーダー</p>
+    <img class="item item-one" src="./assets/images/1.png" alt="" />
+    <img class="item item-two" src="./assets/images/3.png" alt="" />
+    <img class="item item-three" src="./assets/images/1.png" alt="" />
+    <img class="item item-four" src="./assets/images/3.png" alt="" />
+  </div>
+  <button class="button next-button" id="js-next-button" onclick="gameController.gameContinue()">
+    次のステージへ
+  </button>
+  <script>
+    /* Get the canvas object */
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    let gameObjects = [];
+    const colliderGroup = [];
+    let invaderGroup = [];
+    const LEFT = "left";
+    const RIGHT = "right";
+    let chara = null;
+
+    class GameObject {
+      constructor(x, y, width, height, image) {
+        this.id = this.generateUuid();
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.image = new Image();
+        this.image.src = image;
+        this.image.onload = () => {
+          this.draw();
+        };
+        gameObjects.push(this);
       }
 
-      .item {
-        position: absolute;
-        width: 150px;
-        height: 150px;
-        bottom: 360px;
+      draw() {
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
       }
-      .item-one {
-        left: 150px;
-      }
-      .item-two {
-        left: 350px;
-      }
-      .item-three {
-        left: 550px;
-      }
-      .item-four {
-        left: 750px;
-      }
-    </style>
-  </head>
 
-  <body>
-    <canvas
-      id="canvas"
-      width="1000"
-      height="600"
-      style="background-color: black"
-    ></canvas>
-    <span id="js-score">SCORE: <span id="js-score-text">0</span></span>
-    <div id="js-first-obj">
-      <button
-        class="button start-button"
-        id="js-start-button"
-        onclick="gameController.gameStart()"
-      >
-        スタート
-      </button>
-      <p class="logo">SPACE<br />INVADER</p>
-      <p class="logo logo-text">スペースインベーダー</p>
-      <img class="item item-one" src="./assets/images/1.png" alt="" />
-      <img class="item item-two" src="./assets/images/3.png" alt="" />
-      <img class="item item-three" src="./assets/images/1.png" alt="" />
-      <img class="item item-four" src="./assets/images/3.png" alt="" />
-    </div>
-    <script>
-      /* Get the canvas object */
-      const canvas = document.getElementById("canvas");
-      const ctx = canvas.getContext("2d");
-
-      let gameObjects = [];
-      const colliderGroup = [];
-      let invaderGroup = [];
-      const LEFT = "left";
-      const RIGHT = "right";
-      let chara = null;
-      let score = 0;
-      let timer = 10;
-
-      class GameObject {
-        constructor(x, y, width, height, image) {
-          this.id = this.generateUuid();
-          this.x = x;
-          this.y = y;
-          this.width = width;
-          this.height = height;
-          this.image = new Image();
-          this.image.src = image;
-          this.image.onload = () => {
-            this.draw();
-          };
-          gameObjects.push(this);
+      generateUuid() {
+        // https://github.com/GoogleChrome/chrome-platform-analytics/blob/master/src/internal/identifier.js
+        // const FORMAT: string = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
+        let chars = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".split("");
+        for (let i = 0, len = chars.length; i < len; i++) {
+          switch (chars[i]) {
+            case "x":
+              chars[i] = Math.floor(Math.random() * 16).toString(16);
+              break;
+            case "y":
+              chars[i] = (Math.floor(Math.random() * 4) + 8).toString(16);
+              break;
+          }
         }
+        return chars.join("");
+      }
+    }
 
-        draw() {
-          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    class Chara extends GameObject {
+      constructor(
+        x = 100,
+        y = 350,
+        width = 45,
+        height = 50,
+        image = "./assets/images/2.png"
+      ) {
+        super(x, y, width, height, image);
+      }
+      //
+      update(type) {
+        ctx.clearRect(this.x, this.y, 45, 45);
+        if (type === "left") {
+          this.x = this.x - 15;
         }
+        if (type === "right") {
+          this.x = this.x + 15;
+        }
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      }
+      //
+      shot() {
+        new Bullet(this.x);
+      }
+    }
+    class Bullet extends GameObject {
+      constructor(
+        x = 475,
+        y = 480,
+        width = 10,
+        height = 30,
+        image = "./assets/images/4.png"
+      ) {
+        super(x, y, width, height, image);
+        this.speed = 7;
+      }
+      //
+      update() {
+        this.y -= this.speed;
+        if (this.y < 0) {
+          this.y = -150;
+        }
+        ctx.drawImage(this.image, this.x , this.y, this.width, this.height);
+        // // 当たっているかの判定
+        invaderGroup.forEach((obj) => {
+          this.collision(obj);
+        });
+      }
+      // 敵にあたっていないかチェック
+      collision(obj) {
+        let distX = Math.abs(this.x - obj.x);
+        let distY = Math.abs(this.y - obj.y);
 
-        generateUuid() {
-          // https://github.com/GoogleChrome/chrome-platform-analytics/blob/master/src/internal/identifier.js
-          // const FORMAT: string = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";
-          let chars = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".split("");
-          for (let i = 0, len = chars.length; i < len; i++) {
-            switch (chars[i]) {
-              case "x":
-                chars[i] = Math.floor(Math.random() * 16).toString(16);
-                break;
-              case "y":
-                chars[i] = (Math.floor(Math.random() * 4) + 8).toString(16);
-                break;
+        if (distX < 20 && distY < 30) {
+          console.log("当たった");
+          this.score += 1;
+          // 弾を消す
+          this.x = -1000;
+          // 敵を消す
+          invaderGroup = invaderGroup.filter((v) => v.id !== obj.id);
+          gameObjects = gameObjects.filter((v) => v.id !== obj.id);
+        }
+      }
+    }
+    class Invader extends GameObject {
+      constructor(
+        x = 100,
+        y = 350,
+        width = 45,
+        height = 45,
+        image = "./assets/images/1.png"
+      ) {
+        super(x, y, width, height, image);
+        this.setPositionX = x;
+        this.moveSpeed = 4;
+        invaderGroup.push(this);
+      }
+      // 初回描画
+      appear() {
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      }
+      // ゲーム進行中の描画
+      update() {
+        this.x += this.moveSpeed;
+        if (
+          this.setPositionX - this.x < -50 ||
+          this.setPositionX - this.x > 50
+        ) {
+          this.moveSpeed = this.moveSpeed * -1;
+        }
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      }
+    }
+
+    // ゲーム全体をコントロールする
+    class GameController {
+      constructor() {
+        this.sceneId = 1
+        this.sceneIdMax = 4
+        this.MainThreadId = null;
+        this.gameState = 'none';
+        this.score = 0;
+      }
+
+      // フレームの制御
+      gameStart() {
+        gameObjects = [];
+        invaderGroup = [];
+        document.getElementById("js-first-obj").style.display = "none";
+        document.getElementById("js-score").style.display = "block";
+
+        // ゲームシーンにプレーヤーと敵を配置する
+        this.createScene(this.sceneId);
+        chara = new Chara(475, 500);
+
+        this.setKeyAction();
+        this.MainThreadId = setInterval(() => {
+          // 1フレームごとに処理すべきことはこの中に書く
+          ctx.clearRect(0, 0, 1000, 600);
+          gameObjects.forEach((obj) => {
+            // GameObjectの描画処理と、判定処理などはupdateの中に書く
+            obj.update();
+            if (invaderGroup.length === 0) {
+              console.log("クリア");
+              this.pause()
+              this.continue()
             }
-          }
-          return chars.join("");
-        }
-      }
-
-      class Chara extends GameObject {
-        constructor(
-          x = 100,
-          y = 350,
-          width = 45,
-          height = 45,
-          image = "./assets/images/2.png"
-        ) {
-          super(x, y, width, height, image);
-        }
-        //
-        update(type) {
-          ctx.clearRect(this.x, this.y, 45, 45);
-          if (type === "left") {
-            this.x = this.x - 15;
-          }
-          if (type === "right") {
-            this.x = this.x + 15;
-          }
-          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-        }
-        //
-        shot() {
-          new Bullet(this.x);
-        }
-      }
-      class Bullet extends GameObject {
-        constructor(
-          x = 475,
-          y = 450,
-          width = 10,
-          height = 30,
-          image = "./assets/images/4.png"
-        ) {
-          super(x, y, width, height, image);
-          this.speed = 7;
-        }
-        //
-        update() {
-          this.y -= this.speed;
-          if (this.y < 0) {
-            this.y = -150;
-          }
-          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-          // // 当たっているかの判定
-          invaderGroup.forEach((obj) => {
-            this.collision(obj);
           });
-        }
-        // 敵にあたっていないかチェック
-        collision(obj) {
-          let distX = Math.abs(this.x - obj.x);
-          let distY = Math.abs(this.y - obj.y);
+          this.changeScore();
+        }, 33);
+      }
 
-          if (distX < 30 && distY < 30) {
-            console.log("当たった");
-            score += 1;
-            // 弾を消す
-            this.x = -1000;
-            // 敵を消す
-            invaderGroup = invaderGroup.filter((v) => v.id !== obj.id);
-            gameObjects = gameObjects.filter((v) => v.id !== obj.id);
+      setKeyAction() {
+        document.onkeydown = (event) => {
+          // コンテニュー画面でキー操作を無効にする
+          if (this.gameState === 'continue') {
+            return
           }
-        }
-      }
-      class Invader extends GameObject {
-        constructor(
-          x = 100,
-          y = 350,
-          width = 45,
-          height = 45,
-          image = "./assets/images/1.png"
-        ) {
-          super(x, y, width, height, image);
-          this.setPositionX = x;
-          this.moveSpeed = 4;
-          invaderGroup.push(this);
-        }
-        // 初回描画
-        appear() {
-          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-        }
-        // ゲーム進行中の描画
-        update() {
-          this.x += this.moveSpeed;
-          if (
-            this.setPositionX - this.x < -50 ||
-            this.setPositionX - this.x > 50
-          ) {
-            this.moveSpeed = this.moveSpeed * -1;
+          // 左
+          if (event.keyCode === 37) {
+            chara.update(LEFT);
           }
-          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-        }
-      }
-
-      // ゲーム全体をコントロールする
-      class GameController {
-        constructor() {
-          this.sceneId = 1
-          this.MainThreadId = null;
-        }
-        // フレームの制御
-        gameStart() {
-          gameObjects = [];
-          invaderGroup = [];
-          document.getElementById("js-first-obj").style.display = "none";
-          document.getElementById("js-score").style.display = "block";
-
-          // ゲームシーンにプレーヤーと敵を配置する
-          this.createScene(this.sceneId);
-          chara = new Chara(475, 500);
-
-          this.setKeyAction();
-          this.MainThreadId = setInterval(() => {
-            // 1フレームごとに処理すべきことはこの中に書く
-            ctx.clearRect(0, 0, 1000, 600);
-            gameObjects.forEach((obj) => {
-              // GameObjectの描画処理と、判定処理などはupdateの中に書く
-              obj.update();
-              if (invaderGroup.length === 0) {
-                console.log("クリア");
-              }
-            });
-            changeScore();
-          }, 33);
-        }
-        setKeyAction() {
-          document.onkeydown = (event) => {
-            // 左
-            if (event.keyCode === 37) {
-              chara.update(LEFT);
-            }
-            // 右
-            if (event.keyCode === 39) {
-              chara.update(RIGHT);
-            }
-            // スペース
-            if (event.keyCode === 32) {
-              chara.shot();
-            }
-          };
-        }
-        pause() {
-          clearInterval(this.MainThreadId);
-        }
-        restart() {
-          gameStart();
-        }
-        createScene() {
-          console.log(this.sceneId)
-          // ファイルをもとにステージを生成
-          for (let i = 0; i < 9; i++) {
-            for (let j = 0; j < 4; j++) {
-              new Invader(75, 50 + 100 * j);
-            }
+          // 右
+          if (event.keyCode === 39) {
+            chara.update(RIGHT);
           }
-        }
-      }
-      function changeScore() {
-        document.getElementById("js-score-text").innerHTML = score;
+          // スペース
+          if (event.keyCode === 32) {
+            chara.shot();
+          }
+        };
       }
 
-      const gameController = new GameController()
-    </script>
-  </body>
+      continue() {
+        this.gameState = 'continue'
+        this.setKeyAction()
+        ctx.fillRect(0, 0, 1000, 600);
+        document.getElementById("js-next-button").style.display = "block";
+        document.getElementById("js-score").style.display = "none";
+      }
+
+      gameContinue() {
+        this.gameState = 'none'
+        this.sceneId += 1
+        this.gameStart()
+        document.getElementById("js-next-button").style.display = "none";
+        document.getElementById("js-score").style.display = "block";
+      }
+
+      changeScore() {
+        document.getElementById("js-score-text").innerHTML = this.score;
+      }
+
+      pause() {
+        clearInterval(this.MainThreadId);
+      }
+
+      restart() {
+        gameStart();
+      }
+
+      createScene() {
+        console.log(this.sceneId)
+
+        // ファイルをもとにステージを生成
+        if (this.sceneId === 1) {
+          // for (let i = 0; i < 9; i++) {
+          //   for (let j = 0; j < 4; j++) {
+          new Invader(75, 50 + 100 * 1);
+          //   }
+          // }
+        } else if (this.sceneId === 2) {
+          // for (let i = 0; i < 9; i++) {
+          //   for (let j = 0; j < 4; j++) {
+          new Invader(75, 50 + 100 * 1);
+          // new Invader(75 + 100 * i, 50 + 100 * j);
+          //   }
+          // }
+        } else if (this.sceneId === 3) {
+          // for (let i = 0; i < 9; i++) {
+          //   for (let j = 0; j < 4; j++) {
+          new Invader(75, 50 + 100 * 1);
+          // new Invader(75 + 100 * i, 50 + 100 * j);
+          //   }
+          // }
+        } else if (this.sceneId === 4) {
+          // for (let i = 0; i < 9; i++) {
+          //   for (let j = 0; j < 4; j++) {
+          new Invader(75, 50 + 100 * 1);
+          // new Invader(75 + 100 * i, 50 + 100 * j);
+          //   }
+          // }
+        }
+      }
+    }
+
+
+    const gameController = new GameController()
+  </script>
+</body>
+
 </html>
