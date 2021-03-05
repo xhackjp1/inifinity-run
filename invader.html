@@ -397,20 +397,7 @@
         chara = new Chara(475, 500);
 
         this.setKeyAction();
-        this.MainThreadId = setInterval(() => {
-          // 1フレームごとに処理すべきことはこの中に書く
-          ctx.clearRect(0, 0, 1000, 600);
-          gameObjects.forEach((obj) => {
-            // GameObjectの描画処理と、判定処理などはupdateの中に書く
-            obj.update();
-            if (invaderGroup.length === 0) {
-              console.log("クリア");
-              this.pause()
-              this.continueOrEnd()
-            }
-          });
-          this.changeScore();
-        }, 33);
+        window.requestAnimationFrame(mainLoop)
       }
 
       setKeyAction() {
@@ -510,7 +497,9 @@
       }
 
       gameOver () {
-        ctx.fillStyle = 'red';
+        invaderGroup = []
+        gameObjects = []
+        // ctx.fillStyle = 'red';
         ctx.fillRect(0, 0, 1000, 600);
         ctx.font = 'bold 72pt sans-serif';
         ctx.fillStyle = "black";
@@ -520,8 +509,26 @@
       }
     }
 
-
     const gameController = new GameController()
+
+    // メインループ
+    function mainLoop () {
+      // 1フレームごとに処理すべきことはこの中に書く
+      ctx.clearRect(0, 0, 1000, 600);
+      gameObjects.forEach((obj) => {
+        // GameObjectの描画処理と、判定処理などはupdateの中に書く
+        obj.update();
+      });
+      gameController.changeScore();
+
+      if (invaderGroup.length === 0) {
+        console.log("クリア");
+        gameController.pause()
+        gameController.continueOrEnd()
+      } else {
+        window.requestAnimationFrame(mainLoop)
+      }
+    }
   </script>
 </body>
 
