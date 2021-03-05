@@ -87,10 +87,17 @@
     }
     #js-hp {
       position: absolute;
-      top: 20px;
+      top: 60px;
       color: #fff;
       font-size: 28px;
-      right: 100px;
+      left: 30px;
+    }
+    #js-timer {
+      position: absolute;
+      top: 20px;
+      color: #fff;
+      font-size: 32px;
+      left: 500px;
     }
 
     .logo {
@@ -146,6 +153,7 @@
   <div id="js-header">
     <span id="js-score">SCORE: <span id="js-score-text">0</span></span>
     <span id="js-hp">HP: <span id="js-hp-text">0</span></span>
+    <span id="js-timer">30</span>
   </div>
   <div id="js-first-obj">
     <button class="button start-button" id="js-start-button" onclick="gameController.gameStart()">
@@ -235,10 +243,7 @@
         }
 
         if (this.hp <= 0) {
-          gameController.gameState = 'gameOver'
-          gameController.pause()
           gameController.gameOver()
-          gameController.setKeyAction()
           return
         }
         if (type === "left") {
@@ -283,8 +288,8 @@
         let distY = Math.abs(this.y - obj.y);
 
         if (distX < 20 && distY < 30) {
-          console.log("当たった");
-          gameController.score += 1;
+          console.log("敵に当たった");
+          gameController.addScore();
           console.log()
           // 弾を消す
           this.x = -1000;
@@ -324,7 +329,7 @@
         if (distX < 30 && distY < 20) {
           console.log("当たった");
           chara.hp -= 2;
-          console.log(chara.hp)
+          // console.log(chara.hp)
           // 弾を消す
           this.x = 1000;
         }
@@ -383,6 +388,8 @@
         this.MainThreadId = null;
         this.gameState = 'none';
         this.score = 0;
+        this.timer = 30;
+        this.countDownId = null;
       }
 
       // フレームの制御
@@ -397,6 +404,7 @@
         chara = new Chara(475, 500);
 
         this.setKeyAction();
+        this.countDown();
         this.MainThreadId = setInterval(() => {
           // 1フレームごとに処理すべきことはこの中に書く
           ctx.clearRect(0, 0, 1000, 600);
@@ -409,7 +417,6 @@
               this.continueOrEnd()
             }
           });
-          this.changeScore();
         }, 33);
       }
 
@@ -439,7 +446,8 @@
           document.getElementById("js-header").style.display = "none";
           this.end()
         } else {
-          this.gameState = 'continue'
+          this.gameState = 'continue';
+          this.timer = 30;
           this.setKeyAction()
           ctx.fillRect(0, 0, 1000, 600);
           document.getElementById("js-next-button").style.display = "block";
@@ -458,6 +466,17 @@
       changeScore() {
         document.getElementById("js-score-text").innerHTML = this.score;
       }
+      
+      addScore () {
+        if (this.timer >= 20) {
+          this.score += 5;
+        } else if (this.timer >= 10) {
+          this.score += 3;
+        } else {
+          this.score += 1;
+        }
+        this.changeScore()
+      }
 
       pause() {
         clearInterval(this.MainThreadId);
@@ -468,8 +487,7 @@
       }
 
       createScene() {
-        console.log(this.sceneId)
-
+        // console.log(this.sceneId)
         // ファイルをもとにステージを生成
         if (this.sceneId === 1) {
           for (let i = 0; i < 6; i++) {
@@ -510,6 +528,9 @@
       }
 
       gameOver () {
+        this.gameState = 'gameOver'
+        this.pause()
+        this.setKeyAction()
         ctx.fillStyle = 'red';
         ctx.fillRect(0, 0, 1000, 600);
         ctx.font = 'bold 72pt sans-serif';
@@ -517,6 +538,18 @@
         ctx.fillText('GAME OVER', 200, 300);
         document.getElementById("js-header").style.display = "none";
         document.getElementById("js-share-button").style.display = "block";
+      }
+
+      countDown () {
+        console.log(this.gameState)
+        this.countDownId = setInterval(() => {
+          this.timer -= 1;
+          document.getElementById('js-timer').textContent = this.timer;
+          if (this.timer <= 0 && this.gameState === 'none') {
+            clearInterval(this.countDownId);
+            this.gameOver()
+          }
+        }, 1000);
       }
     }
 
