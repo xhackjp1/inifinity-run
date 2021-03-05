@@ -243,7 +243,7 @@
         }
 
         if (this.hp <= 0) {
-          gameController.gameOver()
+          gameController.gameState = 'gameOver'
           return
         }
         if (type === "left") {
@@ -388,7 +388,7 @@
         this.MainThreadId = null;
         this.gameState = 'none';
         this.score = 0;
-        this.timer = 30;
+        this.timer = 10;
         this.countDownId = null;
       }
 
@@ -404,6 +404,7 @@
         chara = new Chara(475, 500);
 
         this.setKeyAction();
+        this.countDown();
         window.requestAnimationFrame(mainLoop)
       }
 
@@ -517,13 +518,18 @@
       }
 
       gameOver () {
-        invaderGroup = []
-        gameObjects = []
-        // ctx.fillStyle = 'red';
+        console.log('game over')
+        this.pause();
         ctx.fillRect(0, 0, 1000, 600);
+        ctx.fillStyle = 'black';
         ctx.font = 'bold 72pt sans-serif';
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "red";
         ctx.fillText('GAME OVER', 200, 300);
+        attackGroup = [];
+        invaderGroup = [];
+        gameObjects = [];
+        this.gameState = 'gameOver';
+        this.setKeyAction();
         document.getElementById("js-header").style.display = "none";
         document.getElementById("js-share-button").style.display = "block";
       }
@@ -535,15 +541,18 @@
           document.getElementById('js-timer').textContent = this.timer;
           if (this.timer <= 0 && this.gameState === 'none') {
             clearInterval(this.countDownId);
-            this.gameOver()
+            // this.gameOver()
+            this.gameState = "gameOver"
+          } else if (this.gameState === 'continue') {
+            console.log('continue')
+            clearInterval(this.countDownId);
           }
         }, 1000);
       }
     }
 
     const gameController = new GameController()
-    gameController.countDown();
-
+    
     // メインループ
     function mainLoop () {
       // 1フレームごとに処理すべきことはこの中に書く
@@ -553,13 +562,19 @@
         obj.update();
       });
       // gameController.changeScore();
+      let requestId = null
 
-      if (invaderGroup.length === 0) {
+      if (invaderGroup.length === 0 && gameController.gameState === 'none') {
         console.log("クリア");
         gameController.pause()
         gameController.continueOrEnd()
+      } else if (gameController.gameState === 'gameOver') {
+        console.log('end')
+        gameController.gameOver()
+        window.cancelAnimationFrame(requestId);
       } else {
-        window.requestAnimationFrame(mainLoop)
+        // console.log('続く')
+        requestId = window.requestAnimationFrame(mainLoop)
       }
     }
   </script>
