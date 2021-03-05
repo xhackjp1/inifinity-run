@@ -74,14 +74,23 @@
     .share-button:hover {
       background: rgb(28 179 242);
     }
-
-    #js-score {
+    
+    #js-header {
       display: none;
+    }
+    #js-score {
       position: absolute;
       top: 20px;
       color: #fff;
       font-size: 28px;
       left: 30px;
+    }
+    #js-hp {
+      position: absolute;
+      top: 20px;
+      color: #fff;
+      font-size: 28px;
+      right: 100px;
     }
 
     .logo {
@@ -134,7 +143,10 @@
 
 <body>
   <canvas id="canvas" width="1000" height="600" style="background-color: black"></canvas>
-  <span id="js-score">SCORE: <span id="js-score-text">0</span></span>
+  <div id="js-header">
+    <span id="js-score">SCORE: <span id="js-score-text">0</span></span>
+    <span id="js-hp">HP: <span id="js-hp-text">0</span></span>
+  </div>
   <div id="js-first-obj">
     <button class="button start-button" id="js-start-button" onclick="gameController.gameStart()">
       スタート
@@ -149,7 +161,8 @@
   <button class="button next-button" id="js-next-button" onclick="gameController.gameContinue()">
     次のステージへ
   </button>
-  <a target="_blank" id="js-share-button" class="button share-button" href="http://twitter.com/share?url=https://twitter.com/home&text=インベーダーゲームで遊んだよ！">Twitterでシェア</a>
+  <a target="_blank" id="js-share-button" class="button share-button"
+    href="http://twitter.com/share?url=https://twitter.com/home&text=インベーダーゲームで遊んだよ！&hashtags=xhack勉強会,web開発塾">Twitterでシェア</a>
   <script>
     /* Get the canvas object */
     const canvas = document.getElementById("canvas");
@@ -157,6 +170,7 @@
 
     let gameObjects = [];
     const colliderGroup = [];
+    let attackGroup = [];
     let invaderGroup = [];
     const LEFT = "left";
     const RIGHT = "right";
@@ -208,10 +222,25 @@
         image = "./assets/images/2.png"
       ) {
         super(x, y, width, height, image);
+        this.hp = 10;
       }
       //
       update(type) {
         ctx.clearRect(this.x, this.y, 45, 45);
+
+        document.getElementById("js-hp-text").innerHTML = this.hp;
+
+        if (this.hp < 5) {
+          document.getElementById("js-hp-text").style.color = "red";
+        }
+
+        if (this.hp <= 0) {
+          gameController.gameState = 'gameOver'
+          gameController.pause()
+          gameController.gameOver()
+          gameController.setKeyAction()
+          return
+        }
         if (type === "left") {
           this.x = this.x - 15;
         }
@@ -255,7 +284,8 @@
 
         if (distX < 20 && distY < 30) {
           console.log("当たった");
-          this.score += 1;
+          gameController.score += 1;
+          console.log()
           // 弾を消す
           this.x = -1000;
           // 敵を消す
@@ -264,6 +294,43 @@
         }
       }
     }
+
+    class Attack extends GameObject {
+      constructor(
+        x = 475,
+        y = 480,
+        width = 10,
+        height = 30,
+        image = "./assets/images/5.png"
+      ) {
+        super(x, y, width, height, image);
+        this.speed = 7;
+        attackGroup.push(this)
+      }
+      //
+      update() {
+        this.y += this.speed;
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        // 当たっているかの判定
+        attackGroup.forEach((obj) => {
+          this.collision(obj);
+        });
+      }
+      // メインキャラクターにあたっていないかチェック
+      collision(obj) {
+        let distX = Math.abs(chara.x - obj.x);
+        let distY = Math.abs(chara.y - obj.y);
+
+        if (distX < 30 && distY < 20) {
+          console.log("当たった");
+          chara.hp -= 2;
+          console.log(chara.hp)
+          // 弾を消す
+          this.x = 1000;
+        }
+      }
+    }
+
     class Invader extends GameObject {
       constructor(
         x = 100,
@@ -275,6 +342,7 @@
         super(x, y, width, height, image);
         this.setPositionX = x;
         this.moveSpeed = 4;
+        this.interval = Math.floor(Math.random() * 100);
         invaderGroup.push(this);
       }
       // 初回描画
@@ -283,6 +351,7 @@
       }
       // ゲーム進行中の描画
       update() {
+        // 動くスピードの調整
         this.x += this.moveSpeed;
         if (
           this.setPositionX - this.x < -50 ||
@@ -290,7 +359,19 @@
         ) {
           this.moveSpeed = this.moveSpeed * -1;
         }
+
+        // 弾を打つ
+        this.interval -= 1
+        if (this.interval === 0) {
+          this.shot()
+          this.interval = Math.floor(Math.random() * 200 ) + 100
+        }
+
         ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      }
+
+      shot() {
+        new Attack(this.x + this.width / 2, this.y + this.height / 2)
       }
     }
 
@@ -309,7 +390,7 @@
         gameObjects = [];
         invaderGroup = [];
         document.getElementById("js-first-obj").style.display = "none";
-        document.getElementById("js-score").style.display = "block";
+        document.getElementById("js-header").style.display = "block";
 
         // ゲームシーンにプレーヤーと敵を配置する
         this.createScene(this.sceneId);
@@ -334,8 +415,8 @@
 
       setKeyAction() {
         document.onkeydown = (event) => {
-          // コンテニュー画面でキー操作を無効にする
-          if (this.gameState === 'continue') {
+          // コンテニュー、ゲームオーバー画面でキー操作を無効にする
+          if (this.gameState !== 'none') {
             return
           }
           // 左
@@ -355,14 +436,14 @@
 
       continueOrEnd() {
         if (this.sceneId === 4) {
-          document.getElementById("js-score").style.display = "none";
+          document.getElementById("js-header").style.display = "none";
           this.end()
         } else {
           this.gameState = 'continue'
           this.setKeyAction()
           ctx.fillRect(0, 0, 1000, 600);
           document.getElementById("js-next-button").style.display = "block";
-          document.getElementById("js-score").style.display = "none";
+          document.getElementById("js-header").style.display = "none";
         }
       }
 
@@ -371,7 +452,7 @@
         this.sceneId += 1
         this.gameStart()
         document.getElementById("js-next-button").style.display = "none";
-        document.getElementById("js-score").style.display = "block";
+        document.getElementById("js-header").style.display = "block";
       }
 
       changeScore() {
@@ -396,7 +477,8 @@
               new Invader(175 + 100 * i, 80 + 100 * j);
             }
           }
-        // new Invader(175 + 100, 80 + 100);
+          // new Invader(175 + 100, 80 + 100);
+        // }
         } else if (this.sceneId === 2) {
           for (let i = 0; i < 7; i++) {
             for (let j = 0; j < 3; j++) {
@@ -424,6 +506,16 @@
         ctx.font = 'bold 72pt sans-serif';
         ctx.fillStyle = "red";
         ctx.fillText('Congratulations！', 50, 300);
+        document.getElementById("js-share-button").style.display = "block";
+      }
+
+      gameOver () {
+        ctx.fillStyle = 'red';
+        ctx.fillRect(0, 0, 1000, 600);
+        ctx.font = 'bold 72pt sans-serif';
+        ctx.fillStyle = "black";
+        ctx.fillText('GAME OVER', 200, 300);
+        document.getElementById("js-header").style.display = "none";
         document.getElementById("js-share-button").style.display = "block";
       }
     }
