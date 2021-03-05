@@ -506,16 +506,22 @@
       }
 
       end() {
+        this.gameState = 'end'
         invaderGroup = []
         gameObjects = []
+        this.pause();
+        this.setKeyAction();
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, 1000, 600);
-        ctx.font = 'bold 72pt sans-serif';
+        ctx.font = 'bold 72pt DotGothic16';
         ctx.fillStyle = "red";
-        ctx.fillText('Congratulations！', 70, 200);
-        ctx.font = 'bold 32pt sans-serif';
+        ctx.fillText('Congratulations！', 100, 200);
+        ctx.font = 'bold 32pt DotGothic16';
         ctx.fillStyle = "yellow";
         ctx.fillText(`SCORE: ${this.score}`, 380, 300);
+        ctx.font = '24pt DotGothic16';
+        ctx.fillStyle = "blue";
+        ctx.fillText('Play Again? Reload the Page!', 270, 520);
         document.getElementById("js-share-button").style.display = "block";
         document.getElementById("js-share-button").href = `http://twitter.com/share?url=https://twitter.com/home&text=インベーダーゲームで遊んだよ！スコア：${gameController.score}&hashtags=xhack勉強会,web開発塾`
       }
@@ -525,12 +531,15 @@
         this.pause();
         ctx.fillRect(0, 0, 1000, 600);
         ctx.fillStyle = 'black';
-        ctx.font = 'bold 72pt sans-serif';
+        ctx.font = 'bold 72pt DotGothic16';
         ctx.fillStyle = "red";
-        ctx.fillText('GAME OVER', 180, 200);
-        ctx.font = 'bold 32pt sans-serif';
+        ctx.fillText('GAME OVER', 280, 200);
+        ctx.font = '32pt DotGothic16';
         ctx.fillStyle = "yellow";
-        ctx.fillText(`SCORE: ${this.score}`, 380, 300);
+        ctx.fillText(`SCORE: ${this.score}`, 400, 300);
+        ctx.font = '24pt DotGothic16';
+        ctx.fillStyle = "blue";
+        ctx.fillText('Play Again? Reload the Page!', 270, 520);
         attackGroup = [];
         invaderGroup = [];
         gameObjects = [];
