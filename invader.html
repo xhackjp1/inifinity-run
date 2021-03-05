@@ -170,7 +170,7 @@
     次のステージへ
   </button>
   <a target="_blank" id="js-share-button" class="button share-button"
-    href="http://twitter.com/share?url=https://twitter.com/home&text=インベーダーゲームで遊んだよ！&hashtags=xhack勉強会,web開発塾">Twitterでシェア</a>
+    href="">Twitterでシェア</a>
   <script>
     /* Get the canvas object */
     const canvas = document.getElementById("canvas");
@@ -290,7 +290,6 @@
         if (distX < 20 && distY < 30) {
           console.log("敵に当たった");
           gameController.addScore();
-          console.log()
           // 弾を消す
           this.x = -1000;
           // 敵を消す
@@ -309,7 +308,7 @@
         image = "./assets/images/5.png"
       ) {
         super(x, y, width, height, image);
-        this.speed = 7;
+        this.speed = 5;
         attackGroup.push(this)
       }
       //
@@ -326,7 +325,7 @@
         let distX = Math.abs(chara.x - obj.x);
         let distY = Math.abs(chara.y - obj.y);
 
-        if (distX < 30 && distY < 20) {
+        if (distX < 30 && distY < 30) {
           console.log("当たった");
           chara.hp -= 2;
           // console.log(chara.hp)
@@ -346,7 +345,7 @@
       ) {
         super(x, y, width, height, image);
         this.setPositionX = x;
-        this.moveSpeed = 4;
+        this.moveSpeed = 2;
         this.interval = Math.floor(Math.random() * 100);
         invaderGroup.push(this);
       }
@@ -369,7 +368,7 @@
         this.interval -= 1
         if (this.interval === 0) {
           this.shot()
-          this.interval = Math.floor(Math.random() * 200 ) + 100
+          this.interval = Math.floor(Math.random() * 300 ) + 100
         }
 
         ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
@@ -513,8 +512,12 @@
         ctx.fillRect(0, 0, 1000, 600);
         ctx.font = 'bold 72pt sans-serif';
         ctx.fillStyle = "red";
-        ctx.fillText('Congratulations！', 50, 300);
+        ctx.fillText('Congratulations！', 70, 200);
+        ctx.font = 'bold 32pt sans-serif';
+        ctx.fillStyle = "yellow";
+        ctx.fillText(`SCORE: ${this.score}`, 380, 300);
         document.getElementById("js-share-button").style.display = "block";
+        document.getElementById("js-share-button").href = `http://twitter.com/share?url=https://twitter.com/home&text=インベーダーゲームで遊んだよ！スコア：${gameController.score}&hashtags=xhack勉強会,web開発塾`
       }
 
       gameOver () {
@@ -524,7 +527,10 @@
         ctx.fillStyle = 'black';
         ctx.font = 'bold 72pt sans-serif';
         ctx.fillStyle = "red";
-        ctx.fillText('GAME OVER', 200, 300);
+        ctx.fillText('GAME OVER', 180, 200);
+        ctx.font = 'bold 32pt sans-serif';
+        ctx.fillStyle = "yellow";
+        ctx.fillText(`SCORE: ${this.score}`, 380, 300);
         attackGroup = [];
         invaderGroup = [];
         gameObjects = [];
@@ -532,6 +538,7 @@
         this.setKeyAction();
         document.getElementById("js-header").style.display = "none";
         document.getElementById("js-share-button").style.display = "block";
+        document.getElementById("js-share-button").href = `http://twitter.com/share?url=https://twitter.com/home&text=インベーダーゲームで遊んだよ！ SCORE：${gameController.score}&hashtags=xhack勉強会,web開発塾`
       }
 
       countDown () {
