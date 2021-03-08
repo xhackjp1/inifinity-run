@@ -29,6 +29,7 @@
     .start-button:hover {
       background: #4676d7;
     }
+
     .replay-button:hover {
       background: #e06767;
     }
@@ -41,6 +42,7 @@
     .start-button {
       background: blue;
     }
+
     .replay-button {
       background: red;
       display: none;
@@ -50,7 +52,7 @@
 </head>
 
 <body>
-  <canvas id="canvas" width="1000" height="600" style="background-color: mediumturquoise"></canvas>
+  <canvas id="canvas" width="1600" height="900" style="background-color: mediumturquoise"></canvas>
   <button id="js-start-button" class="button start-button" onclick="gameStart()">ゲームスタート</button>
   <button id="js-replay-button" class="button replay-button" onclick="gameRestart()">もう1回</button>
   <script>
@@ -62,9 +64,12 @@
     let colliderGroup = [];
     let main
 
+    const backGround = new Image()
+    backGround.src = "./assets/images/bg.jpg";
+
     /* Images */
     class MainCharacter {
-      constructor(x = 100, y = 350, width = 90, height = 90) {
+      constructor(x = 100, y = 750, width = 90, height = 90) {
         this.x = x;
         this.y = y;
         this.state = "normal";
@@ -72,8 +77,17 @@
         this.height = height;
         this.vy = 0 // 加速度
         this.image = new Image();
-        this.image.src = "./assets/images/chara1.png";
-        this.jumpPower = -16
+        this.image.src = "./assets/images/bird128.png";
+        this.jumpPower = -21
+        this.frameCount = 0
+
+        // Define the size of a frame
+        this.frameWidth = 128;
+        this.frameHeight = 128;
+
+        // Rows and columns start from 0
+        this.row = 0;
+        this.column = 0;
 
         gameObjects.push(this)
       }
@@ -85,53 +99,86 @@
         }
         this.vy = this.jumpPower
         this.state = "jump";
+        this.column = 2
       }
 
-      collidion(obj) {
-        // distant
-        console.log('chara ',this.x)
-        console.log('ishi ',obj.x)
-        console.log(Math.abs(this.x - obj.x))
-        let distX = Math.abs(this.x - obj.x);
-        let distY = Math.abs(this.y - obj.y);
-        if (distX < 80 && distY < 80) {
-          console.log("ぶつかった！")
-          // 衝突したオブジェクトが、障害物かニンジンか判定する
-          console.log(obj.constructor.name)
-          // console.log(obj.name)
-          if(obj.constructor.name === 'Carrot') {
-            obj.x = 3000
-            this.jumpPower = this.jumpPower - 4
-            return
+      // collidion(obj) {
+      //   // distant
+      //   console.log('chara ', this.x)
+      //   console.log('ishi ', obj.x)
+      //   console.log(Math.abs(this.x - obj.x))
+      //   let distX = Math.abs(this.x - obj.x);
+      //   let distY = Math.abs(this.y - obj.y);
+      //   if (distX < 80 && distY < 80) {
+      //     console.log("ぶつかった！")
+      //     // 衝突したオブジェクトが、障害物かニンジンか判定する
+      //     console.log(obj.constructor.name)
+      //     // console.log(obj.name)
+      //     if (obj.constructor.name === 'Carrot') {
+      //       obj.x = 3000
+      //       this.jumpPower = this.jumpPower - 4
+      //       return
+      //     }
+      //     // ゲームを終了する
+      //     gameOver()
+      //   }
+      // }
+
+      refresh() {
+        this.frameCount += 1
+        if (this.state === "normal") {
+          if (this.column === 0 && this.frameCount > 8) {
+            this.column = 1
+            this.frameCount = 0
+          } else if (this.column === 1 && this.frameCount > 8) {
+            this.column = 0
+            this.frameCount = 0
           }
-
-
-          // ゲームを終了する
-          gameOver()
+        } else if (this.state === "jump") {
+          if (this.column === 3 && this.frameCount > 8) {
+            this.column = 2
+            this.frameCount = 0
+          } else if (this.column === 2 && this.frameCount > 8) {
+            this.column = 3
+            this.frameCount = 0
+          }
         }
+
+        ctx.drawImage(
+          this.image,
+          this.column * this.frameWidth,
+          this.row * this.frameHeight,
+          this.frameWidth,
+          this.frameHeight,
+          this.x,
+          this.y,
+          this.frameWidth,
+          this.frameHeight
+        );
       }
 
       update() {
         if (this.state === "jump") {
           this.y = this.y + this.vy;
-          this.vy = this.vy + 0.9;
-          if (this.y > 350) {
+          this.vy = this.vy + 1.2;
+          if (this.y > 750) {
             // 着地したらjumpステート終了
-            this.y = 350
+            this.y = 750
+            this.column = 0
             this.state = "normal"
           }
         }
-        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-
         // 当たっているかの判定
-        colliderGroup.forEach(obstacle => {
-          this.collidion(obstacle)
-        })
+        // colliderGroup.forEach(obstacle => {
+        //   this.collidion(obstacle)
+        // })
+
+        this.refresh()
       }
     }
 
     class Stone {
-      constructor(x = 900, y = 380, width = 60, height = 60) {
+      constructor(x = 900, y = 825, width = 60, height = 60) {
         this.x = x;
         this.y = y;
         this.speed = 8;
@@ -153,26 +200,26 @@
     }
 
     class Carrot {
-        constructor(x = 900, y = 380, width = 60, height = 60) {
-          this.x = x;
-          this.y = y;
-          this.speed = 8;
-          this.width = width;
-          this.height = height;
-          this.image = new Image();
-          this.image.src = "./assets/images/carrot.png";
-          gameObjects.push(this)
-          colliderGroup.push(this)
-        }
-
-        update() {
-          this.x -= this.speed;
-          if (this.x < 0) {
-            this.x = 1000 + 500 * Math.random();
-          }
-          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-        }
+      constructor(x = 900, y = 810, width = 60, height = 60) {
+        this.x = x;
+        this.y = y;
+        this.speed = 8;
+        this.width = width;
+        this.height = height;
+        this.image = new Image();
+        this.image.src = "./assets/images/carrot.png";
+        gameObjects.push(this)
+        colliderGroup.push(this)
       }
+
+      update() {
+        this.x -= this.speed;
+        if (this.x < 0) {
+          this.x = 1000 + 500 * Math.random();
+        }
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      }
+    }
 
     /* GameObject */
     function init() {
@@ -204,7 +251,8 @@
       init()
       /* メインループ */
       main = setInterval(() => {
-        ctx.fillRect(0, 0, 1000, 600);
+        // ctx.fillStyle = "#FFFFFF"
+        ctx.drawImage(backGround, 0, 0, 1600, 900);
         gameObjects.forEach((obj) => {
           obj.update();
         });
@@ -225,7 +273,7 @@
     function gameRestart() {
       console.log(11111)
       document.getElementById('js-replay-button').style.display = "none";
-        gameStart()
+      gameStart()
 
     }
   </script>
