@@ -102,27 +102,27 @@
         this.column = 2
       }
 
-      // collidion(obj) {
-      //   // distant
-      //   console.log('chara ', this.x)
-      //   console.log('ishi ', obj.x)
-      //   console.log(Math.abs(this.x - obj.x))
-      //   let distX = Math.abs(this.x - obj.x);
-      //   let distY = Math.abs(this.y - obj.y);
-      //   if (distX < 80 && distY < 80) {
-      //     console.log("ぶつかった！")
-      //     // 衝突したオブジェクトが、障害物かニンジンか判定する
-      //     console.log(obj.constructor.name)
-      //     // console.log(obj.name)
-      //     if (obj.constructor.name === 'Carrot') {
-      //       obj.x = 3000
-      //       this.jumpPower = this.jumpPower - 4
-      //       return
-      //     }
-      //     // ゲームを終了する
-      //     gameOver()
-      //   }
-      // }
+      collidion(obj) {
+        // distant
+        console.log('chara ', this.x)
+        console.log('ishi ', obj.x)
+        console.log(Math.abs(this.x - obj.x))
+        let distX = Math.abs(this.x - obj.x);
+        let distY = Math.abs(this.y - obj.y);
+        if (distX < 80 && distY < 80) {
+          console.log("ぶつかった！")
+          // 衝突したオブジェクトが、障害物かニンジンか判定する
+          console.log(obj.constructor.name)
+          // console.log(obj.name)
+          if (obj.constructor.name === 'Carrot') {
+            obj.x = 3000
+            this.jumpPower = this.jumpPower - 4
+            return
+          }
+          // ゲームを終了する
+          gameOver()
+        }
+      }
 
       refresh() {
         this.frameCount += 1
@@ -168,10 +168,11 @@
             this.state = "normal"
           }
         }
+
         // 当たっているかの判定
-        // colliderGroup.forEach(obstacle => {
-        //   this.collidion(obstacle)
-        // })
+        colliderGroup.forEach(obstacle => {
+          this.collidion(obstacle)
+        })
 
         this.refresh()
       }

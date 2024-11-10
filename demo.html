@@ -8,27 +8,30 @@
   </head>
   <body>
     <canvas id="canvas" width="500"></canvas>
-<script>
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
 
-  ctx.fillStyle = "#00ffff";
-  const image = new Image();
-  image.src = "https://mdn.mozillademos.org/files/5397/rhino.jpg";
+      ctx.fillStyle = "#00ffff";
+      const image = new Image();
+      image.src = "https://raw.githubusercontent.com/xhackjp1/inifinity-run/refs/heads/main/assets/images/1.png";
 
-  let x = 0;
-  window.onkeydown = (event) => {
-    ctx.clearRect(0, 0, 500, 500);
-    if (event.code === "ArrowRight") {
-      console.log("右が押された");
-      x = x + 10;
-      ctx.drawImage(image, x, 0, 200, 200);
-    } else if (event.code === "ArrowLeft") {
-      console.log("左が押された");
-      x = x - 10;
-      ctx.drawImage(image, x, 0, 200, 200);
-    }
-  };
-</script>
+      image.onload = () => {
+        ctx.drawImage(image, 0, 0, 200, 200);
+      };
+
+      let x = 0;
+      window.onkeydown = (event) => {
+        ctx.clearRect(0, 0, 500, 500);
+        if (event.code === "ArrowRight") {
+          console.log("右が押された");
+          x = x + 10;
+        } else if (event.code === "ArrowLeft") {
+          console.log("左が押された");
+          x = x - 10;
+        }
+        ctx.drawImage(image, x, 0, 200, 200);
+      };
+    </script>
   </body>
 </html>
